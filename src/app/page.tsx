@@ -23,15 +23,16 @@ const skills = {
 
 const experience = [
   {
-    title: "Senior Manager Software Engineering",
+    title: "Senior Manager - Software Engineering",
     company: "Nasdaq Verafin",
     period: "07/2025 - Present",
     location: "St John's, NL, Canada",
     achievements: [
-      "Managing conversion projects where banks are moved from classic data integration platform to scalable EDP platform",
-      "Accessing code and project risks to ensure successful migrations",
-      "Liaising with other teams to resolve data modelling issues",
-      "Providing leadership and strategic direction for integration projects",
+      "Lead multiple large-scale bank conversion initiatives, migrating clients from legacy data integration platforms to a modern, scalable Enterprise Data Platform (EDP)."
+      "Provide strategic technical leadership across cross-functional teams (engineering, product, QA, and client stakeholders) to ensure successful platform transitions.
+      "Contribute to roadmap planning by aligning engineering execution with business priorities, regulatory requirements, and scalability goals.
+      "Strengthen delivery predictability by enforcing engineering standards around testing, validation, and deployment readiness.
+      "Act as a technical escalation point for complex integration and data issues, ensuring rapid resolution and minimal client impact",
     ],
   },
   {
@@ -41,12 +42,11 @@ const experience = [
     period: "06/2021 - 07/2025",
     location: "St John's, NL, Canada",
     achievements: [
-      "Utilizing Scala, Spark-SQL, and AWS services to address integration challenges in client data lake environments",
-      "Addressing operational cases for clients involving banking systems like Core, ACH, Wire, and Check21",
-      "Conducting QA testing on solutions to resolve customer issues in production",
-      "Developing test code for Jenkins build automation to optimize deployment processes",
-      "Aiding in the onboarding process for new developers within the team",
-      "Reviewing code for risks, promptly addressing issues to safeguard software integrity",
+      "Designed, developed, and maintained scalable data integration pipelines using Scala, Spark SQL, and AWS, supporting complex client data lake environments."
+      "Integrated and supported multiple banking systems, including Core Banking, ACH, Wire, and Check21, ensuring accurate and reliable financial data processing."
+      "Resolved high-priority production and operational issues by diagnosing data, performance, and integration failure across distributed systems."
+      "Mentored junior developers and new team members, accelerating onboarding and reinforcing best practices in data engineering."
+      "Conducted rigorous code reviews and risk assessments to uphold software quality, security, and maintainability standards",
     ],
   },
   {
