@@ -29,9 +29,9 @@ const experience = [
     location: "St John's, NL, Canada",
     achievements: [
       "Lead multiple large-scale bank conversion initiatives, migrating clients from legacy data integration platforms to a modern, scalable Enterprise Data Platform (EDP)."
-      "Provide strategic technical leadership across cross-functional teams (engineering, product, QA, and client stakeholders) to ensure successful platform transitions.
-      "Contribute to roadmap planning by aligning engineering execution with business priorities, regulatory requirements, and scalability goals.
-      "Strengthen delivery predictability by enforcing engineering standards around testing, validation, and deployment readiness.
+      "Provide strategic technical leadership across cross-functional teams (engineering, product, QA, and client stakeholders) to ensure successful platform transitions."
+      "Contribute to roadmap planning by aligning engineering execution with business priorities, regulatory requirements, and scalability goals."
+      "Strengthen delivery predictability by enforcing engineering standards around testing, validation, and deployment readiness."
       "Act as a technical escalation point for complex integration and data issues, ensuring rapid resolution and minimal client impact",
     ],
   },
