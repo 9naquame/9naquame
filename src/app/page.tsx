@@ -198,7 +198,7 @@ export default function Portfolio() {
           </h1>
             <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-8 opacity-0 animate-fade-in-up stagger-2">
               A Senior Software Engineering Leader with 10+ years of experience modernizing fintech and cloud-native systems. 
-              Proven leader of large-scale data integration and legacy-to-EDP migrations, with expertise in AWS, distributed systems, Scala/Spark, DevOps, security, and risk management.           
+              Proven leader of large-scale data integration, with expertise in AWS, distributed systems, Scala/Spark, DevOps, security, and risk management.           
             </p>
           <div className="flex flex-wrap items-center justify-center gap-4 mb-12 opacity-0 animate-fade-in-up stagger-3">
             <a
