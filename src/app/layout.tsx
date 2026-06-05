@@ -1,3 +1,4 @@
+import { ContactProvider } from "@/components/portfolio/Contact";
 import type { Metadata } from "next";
 import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
@@ -27,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.variable} ${jetbrainsMono.variable}`}>
-        {children}
+        <ContactProvider>{children}</ContactProvider>
       </body>
     </html>
   );

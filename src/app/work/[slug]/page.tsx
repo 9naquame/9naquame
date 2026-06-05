@@ -1,3 +1,4 @@
+import { ContactTrigger } from "@/components/portfolio/Contact";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -208,11 +209,12 @@ export default async function ProjectPage({ params }: Props) {
                   : "Curious about the thinking behind the product? Start a conversation."}
               </p>
             </div>
-            <a href="mailto:kwame@owusuboakye.com"
+            <ContactTrigger
+              topic={project.name}
               className="button button-primary"
             >
               Get in touch <ArrowUpRight size={15} />
-            </a>
+            </ContactTrigger>
           </section>
           <Link className="case-next" href={`/work/${next.slug}`}>
             <div>

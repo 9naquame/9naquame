@@ -1,3 +1,4 @@
+import { ContactTrigger } from "@/components/portfolio/Contact";
 import Image from "next/image";
 import Link from "next/link";
 import { featuredProjects, otherProjects } from "@/data/projects";
@@ -112,9 +113,9 @@ export default function Portfolio() {
             <span className="nav-index">03</span> Community
           </a>
         </nav>
-        <a href="mailto:kwame@owusuboakye.com" className="header-contact">
+        <ContactTrigger className="header-contact">
           Let’s talk <ArrowUpRight size={15} />
-        </a>
+        </ContactTrigger>
       </header>
 
       <main id="main" className="profile-shell">
@@ -222,9 +223,9 @@ export default function Portfolio() {
                 >
                   <ArrowDownToLine size={15} /> Résumé
                 </a>
-                <a href="mailto:kwame@owusuboakye.com" className="button button-primary">
+                <ContactTrigger className="button button-primary">
                   <Mail size={15} /> Get in touch <ArrowUpRight size={14} />
-                </a>
+                </ContactTrigger>
               </div>
             </div>
             <div className="identity">
@@ -321,9 +322,9 @@ export default function Portfolio() {
               </div>
               <div className="fact">
                 <span className="fact-label">Say hello</span>
-                <a href="mailto:kwame@owusuboakye.com" className="fact-contact">
+                <ContactTrigger className="fact-contact">
                   kwame@owusuboakye.com <ArrowUpRight size={13} />
-                </a>
+                </ContactTrigger>
               </div>
             </aside>
           </section>
@@ -619,12 +620,12 @@ export default function Portfolio() {
                 A project, a possibility, or just a hello. My inbox is open.
               </p>
             </div>
-            <a href="mailto:kwame@owusuboakye.com" className="contact-arrow" aria-label="Email Kwame">
+            <ContactTrigger className="contact-arrow" aria-label="Email Kwame">
               <ArrowUpRight size={30} strokeWidth={1.4} />
-            </a>
-            <a href="mailto:kwame@owusuboakye.com" className="contact-email">
+            </ContactTrigger>
+            <ContactTrigger className="contact-email">
               kwame@owusuboakye.com <ArrowRight size={17} />
-            </a>
+            </ContactTrigger>
           </section>
         </div>
       </main>
