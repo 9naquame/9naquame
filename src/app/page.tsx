@@ -1,691 +1,639 @@
-"use client";
-
-import { useState } from "react";
-import { Github, Linkedin, Mail, Phone, MapPin, ExternalLink, ChevronDown, Award, Briefcase, GraduationCap, Code2, Heart, Menu, X, Folder, Lock } from "lucide-react";
-
-const navigation = [
-  { name: "About", href: "#about" },
-  { name: "Skills", href: "#skills" },
-  { name: "Experience", href: "#experience" },
-  { name: "Projects", href: "#projects" },
-  { name: "Certifications", href: "#certifications" },
-  { name: "Contact", href: "#contact" },
-];
-
-const skills = {
-  languages: ["Python (Flask, FastAPI)", "PHP (Laravel)", "Java", "C#", "Scala", "C/C++", "JavaScript/TypeScript (ReactJS, Node.js)"],
-  frameworks: ["React Native/ReactJS", "Flask/FastAPI/Laravel", "TensorFlow/PyTorch (AI/ML)", "Hadoop/Spark (Big Data)"],
-  cloud: ["AWS", "GCP", "Kubernetes", "Docker", "Terraform", "Ansible", "Vault", "Consul", "Jenkins", "CI/CD"],
-  databases: ["PostgreSQL", "MySQL", "SQLite", "Microsoft SQL Server", "MongoDB", "Firebase", "Amazon Aurora", "Amazon Redshift", "Redis", "DynamoDB"],
-  embedded: ["Embedded Development (Microcontrollers)", "ASIC Design/VHDL"],
-  other: ["Git", "LaTeX"],
-};
+import Image from "next/image";
+import Link from "next/link";
+import { featuredProjects, otherProjects } from "@/data/projects";
+import { communityGroups } from "@/data/community";
+import {
+  ArrowDown,
+  ArrowDownToLine,
+  ArrowUpRight,
+  ArrowRight,
+  Github,
+  Linkedin,
+  Mail,
+  MapPin,
+  ChevronDown,
+  GraduationCap,
+  AudioLines,
+  Globe2,
+  HeartHandshake,
+  Code2,
+} from "lucide-react";
 
 const experience = [
   {
-    title: "Senior Manager - Software Engineering",
     company: "Nasdaq Verafin",
-    period: "07/2025 - Present",
-    location: "St John's, NL, Canada",
-    achievements: [
-      "Lead multiple large-scale bank conversion initiatives, migrating clients from legacy data integration platforms to a modern, scalable Enterprise Data Platform (EDP).",
-      "Provide strategic technical leadership across cross-functional teams (engineering, product, QA, and client stakeholders) to ensure successful platform transitions.",
-      "Contribute to roadmap planning by aligning engineering execution with business priorities, regulatory requirements, and scalability goals.",
-      "Strengthen delivery predictability by enforcing engineering standards around testing, validation, and deployment readiness.",
-      "Act as a technical escalation point for complex integration and data issues, ensuring rapid resolution and minimal client impact",
+    monogram: "N",
+    className: "nasdaq",
+    period: "2021 — Present",
+    role: "Senior Manager, Software Engineering",
+    note: "Fintech & data platforms",
+    roles: [
+      {
+        title: "Senior Manager, Software Engineering",
+        dates: "Jul 2025 — Present",
+        text: "Leading engineering delivery for bank migrations to a modern Enterprise Data Platform. Partnering across engineering, product, and client teams on platform readiness, delivery, and reliability.",
+      },
+      {
+        title: "Senior Software Developer",
+        dates: "Jun 2021 — Jun 2025",
+        text: "Built distributed data integration pipelines with Scala, Spark SQL, and AWS. Integrated core banking, ACH, Wire, and Check21 data, and mentored engineers through onboarding and code reviews.",
+      },
     ],
   },
   {
-    title: "Senior Software Developer",
-    subtitle: "(formerly Data Integration Developer)",
-    company: "Nasdaq Verafin",
-    period: "06/2021 - 07/2025",
-    location: "St John's, NL, Canada",
-    achievements: [
-      "Designed, developed, and maintained scalable data integration pipelines using Scala, Spark SQL, and AWS, supporting complex client data lake environments.",
-      "Integrated and supported multiple banking systems, including Core Banking, ACH, Wire, and Check21, ensuring accurate and reliable financial data processing.",
-      "Resolved high-priority production and operational issues by diagnosing data, performance, and integration failure across distributed systems.",
-      "Mentored junior developers and new team members, accelerating onboarding and reinforcing best practices in data engineering.",
-      "Conducted rigorous code reviews and risk assessments to uphold software quality, security, and maintainability standards",
+    company: "Zentech IT Solutions",
+    monogram: "Z",
+    className: "zentech",
+    period: "2017 — 2019",
+    role: "Software Development Manager",
+    note: "Enterprise software",
+    roles: [
+      {
+        title: "Software Development Manager",
+        dates: "Jan 2017 — Aug 2019",
+        text: "Led development of ZenHRM enhancements across payroll, employee self-service, claims, loans, and recruitment. Worked directly with customers and strengthened delivery through CI/CD.",
+      },
     ],
   },
   {
-    title: "Software Development Manager",
-    company: "Zentech IT Solutions Limited",
-    period: "01/2017 - 08/2019",
-    location: "Accra, Ghana",
-    achievements: [
-      "Enhanced Payroll/HR modules within the ZenHRM system with Employee Self-Service, Claims, and Loan Management",
-      "Integrated LDAP authentication for enterprise directory services and centralized user management",
-      "Created a recruitment module to expand ZenHRM capabilities",
-      "Engaged with customers to discuss and implement software improvements",
-      "Provided leadership to developers by assigning tasks and maintaining code quality",
-      "Orchestrated continuous integration and deployment processes",
-    ],
-  },
-  {
-    title: "Software Developer",
-    company: "National Trust Holding Company Limited",
-    period: "09/2012 - 12/2016",
-    location: "Accra, Ghana",
-    achievements: [
-      "Spearheaded development and enhancement of diverse investment products",
-      "Implemented system administration protocols, optimizing server performance",
-      "Executed critical database administrative duties including backup strategies and schema design",
-      "Oversaw Linux systems and network infrastructure operations",
-      "Supervised team members and established clear objectives",
+    company: "National Trust Holding Company",
+    monogram: "NTHC",
+    className: "nthc",
+    period: "2012 — 2016",
+    role: "Software Developer",
+    note: "Investment & financial systems",
+    roles: [
+      {
+        title: "Software Developer",
+        dates: "Sep 2012 — Dec 2016",
+        text: "Developed financial software for investment operations, supported database design and administration, and managed Linux systems and network infrastructure.",
+      },
     ],
   },
 ];
 
-const certifications = [
-  { name: "AWS Certified DevOps Engineer – Professional", date: "Expires Jan 13, 2028" },
-  { name: "AWS Certified SysOps Administrator – Associate", date: "Expires Jan 13, 2028" },
-  { name: "AWS Certified Developer – Associate", date: "Expires Jan 13, 2028" },
-  { name: "AWS Certified Data Engineer – Associate", date: "Expires May 21, 2028" },
-  { name: "AWS Certified Machine Learning Engineer – Associate", date: "Expires Jun 1, 2028" },
-  { name: "AWS Certified AI Practitioner", date: "Expires Jun 1, 2028" },
-  { name: "AWS Certified Cloud Practitioner", date: "Expires Jun 1, 2028" },
-  { name: "HashiCorp Certified: Terraform Associate (003)", date: "Expires Jul 1, 2026" },
-  { name: "Accelerating Manager Potential", date: "Issued Nov 27, 2025" },
+const expertise = [
+  "Engineering leadership",
+  "Platform architecture",
+  "Financial systems",
+  "Distributed data",
+  "AWS & cloud infrastructure",
+  "Python / Scala / TypeScript",
 ];
-
-const projects = [
-  {
-    title: "Skill Match AI",
-    description: "AI-powered career and hiring intelligence platform that connects job seekers and employers based on skills and experience using machine learning and resume analysis.",
-    tech: ["React", "FastAPI", "PostgreSQL", "OpenAI", "SerpAPI", "NotificationAPI", "Jenkins", "Docker", "JavaScript", "Python"],
-    github: "https://github.com/9naquame/skill-match-ai",
-    demo: "https://skillmatchai.ca/",
-    image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Screenshot-2025-12-16-at-15.56.00-1765913166812.png?width=8000&height=8000&resize=contain",
-  },
-  {
-    title: "TransactIQ",
-    description: "All-in-one donation and financial tracking platform for churches and charities with automated tax receipt generation and contribution management.",
-    tech: ["Docker", "React", "FastAPI", "PostgreSQL", "NotificationAPI", "Kubernetes", "Jenkins", "Terraform", "JavaScript", "Python"],
-    isPrivate: true,
-    demo: "https://www.transactiq.ca",
-    image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Screenshot-2025-12-16-at-15.29.57-1765911609687.png?width=8000&height=8000&resize=contain",
-  },
-    {
-      title: "Rivet Sales Blueprint Builder",
-      description: "Structured end-to-end sales strategy system designed to help early-stage and founder-led companies build traction and grow revenue faster through tailored GTM plans.",
-      tech: ["Docker", "NextJS", "LangGraph", "AWS", "OpenAI", "MongoDB", "FastAPI", "Kubernetes", "TypeScript", "Python"],
-      demo: "https://demo.salesblueprintbuilder.ai/",
-      image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Screenshot-2025-12-16-at-16.38.29-1765915718283.png?width=8000&height=8000&resize=contain",
-    },
-];
-
-const volunteer = [
-  {
-    title: "DevOps Engineer",
-    organization: "Inkling Ops.",
-    period: "08/2023 - Present",
-    description: "Creators of Meno, a mobile devotional app. Overseeing AWS Cloud infrastructure with Terraform, managing release automation with AWS CodeBuild/CodePipeline and Kubernetes.",
-  },
-  {
-    title: "Volunteer",
-    organization: "Google Developer Group",
-    period: "02/2022 - Present",
-    location: "St John's, NL, Canada",
-    description: "Contributing to planning and execution of DevFest events, managing registrations, coordinating speaker arrangements, and mentoring new developers.",
-  },
+const credentials = [
+  "DevOps Engineer · Professional",
+  "Developer · Associate",
+  "Data Engineer · Associate",
+  "Machine Learning Engineer · Associate",
+  "AI Practitioner",
 ];
 
 export default function Portfolio() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   return (
-    <div className="min-h-screen bg-[#0a0a0b] text-white">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0b]/80 backdrop-blur-xl border-b border-white/5">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <a href="#" className="text-xl font-semibold tracking-tight">
-              <span className="text-emerald-400">K</span>OB
-            </a>
-            <div className="hidden md:flex items-center gap-8">
-              {navigation.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="text-sm text-zinc-400 hover:text-white transition-colors"
-                >
-                  {item.name}
-                </a>
-              ))}
-            </div>
-            <button
-              className="md:hidden text-zinc-400 hover:text-white"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-[#111113] border-b border-white/5">
-            <div className="px-6 py-4 space-y-4">
-              {navigation.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-zinc-400 hover:text-white transition-colors"
-                >
-                  {item.name}
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
-      </nav>
-
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/20 via-transparent to-cyan-900/20" />
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
-        </div>
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-            <div className="opacity-0 animate-fade-in-up">
-              <p className="text-emerald-400 font-mono text-sm mb-4 tracking-wider">SENIOR MANAGER - SOFTWARE ENGINEERING</p>
-            </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 opacity-0 animate-fade-in-up stagger-1">
-            Kwame{" "}
-            <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent animate-gradient-x">
-              Owusu-Boakye
-            </span>
-          </h1>
-            <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-8 opacity-0 animate-fade-in-up stagger-2">
-              A Senior Software Engineering Leader with 10+ years of experience modernizing fintech and cloud-native systems. 
-              Proven leader of large-scale data integration, with expertise in AWS, distributed systems, Scala/Spark, DevOps, security, and risk management.           
-            </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 mb-12 opacity-0 animate-fade-in-up stagger-3">
-            <a
-              href="mailto:koowusuboakye@gmail.com"
-              className="flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-black font-medium rounded-full transition-all hover:scale-105"
-            >
-              <Mail size={18} />
-              Get in Touch
-            </a>
-            <a
-              href="https://github.com/9naquame"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-6 py-3 border border-zinc-700 hover:border-zinc-500 rounded-full transition-all hover:scale-105"
-            >
-              <Github size={18} />
-              GitHub
-            </a>
-            <a
-              href="https://linkedin.com/in/9naquame"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-6 py-3 border border-zinc-700 hover:border-zinc-500 rounded-full transition-all hover:scale-105"
-            >
-              <Linkedin size={18} />
-              LinkedIn
-            </a>
-          </div>
-          <a
-            href="#about"
-            className="inline-flex flex-col items-center gap-2 text-zinc-500 hover:text-zinc-300 transition-colors opacity-0 animate-fade-in-up stagger-4"
-          >
-            <span className="text-sm">Scroll to explore</span>
-            <ChevronDown className="animate-bounce" size={20} />
+    <div className="portfolio">
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
+      <header className="site-header">
+        <a href="#" className="wordmark" aria-label="Kwame Owusu-Boakye home">
+          <Code2 size={24} strokeWidth={1.6} />
+          <span>
+            9naquame<span className="wordmark-dot">.</span>
+          </span>
+        </a>
+        <nav aria-label="Main navigation">
+          <a href="#work">
+            <span className="nav-index">01</span> Work
           </a>
-        </div>
-      </section>
+          <a href="#experience">
+            <span className="nav-index">02</span> Experience
+          </a>
+          <a href="#community">
+            <span className="nav-index">03</span> Community
+          </a>
+        </nav>
+        <a href="mailto:kwame@owusuboakye.com" className="header-contact">
+          Let’s talk <ArrowUpRight size={15} />
+        </a>
+      </header>
 
-      <section id="about" className="py-32 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-              <div>
-                <p className="text-emerald-400 font-mono text-sm mb-4 tracking-wider">ABOUT ME</p>
-                <h2 className="text-4xl font-bold mb-6">Building Solutions That Scale</h2>
-                <p className="text-zinc-400 mb-4 leading-relaxed">
-                  With over a decade of programming experience, I specialize in crafting robust software solutions that address complex business challenges. My expertise spans from low-level embedded systems to high-scale cloud architectures.
-                </p>
-                <p className="text-zinc-400 mb-8 leading-relaxed">
-                  Currently serving as a Senior Manager at Nasdaq Verafin, I lead conversion projects migrating banks from legacy platforms to scalable solutions while managing risks and collaborating across teams to resolve complex data challenges.
-                </p>
-                  <div className="flex items-center gap-3 text-zinc-400">
-                    <MapPin size={18} className="text-emerald-400" />
-                    <span>Newfoundland and Labrador, Canada</span>
-                  </div>
+      <main id="main" className="profile-shell">
+        <div className="cover engineering-cover">
+          <div className="hero-copy">
+            <div className="hero-eyebrow">
+              <span /> ENGINEERING · ARCHITECTURE · LEADERSHIP
             </div>
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-2xl blur-2xl" />
-              <div className="relative bg-[#111113] border border-white/10 rounded-2xl p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <GraduationCap className="text-emerald-400" size={24} />
-                  <h3 className="text-xl font-semibold">Education</h3>
-                </div>
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium">MASc Computer Engineering</h4>
-                      <p className="text-zinc-400 text-sm">Memorial University of Newfoundland</p>
-                      <p className="text-zinc-500 text-sm">09/2019 - 06/2021 | St John&apos;s, NL, Canada</p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">BSc Computer Engineering</h4>
-                      <p className="text-zinc-400 text-sm">University of Ghana</p>
-                      <p className="text-zinc-500 text-sm">08/2008 - 05/2012 | Legon, Accra, Ghana</p>
-                    </div>
-                  </div>
-                <div className="mt-8 pt-6 border-t border-white/10">
+            <p className="hero-statement">
+              Complex systems.
+              <br />
+              <span>Clear direction.</span>
+            </p>
+            <div className="hero-signature">
+              HANDS-ON SINCE 2012 <span>↗</span> BUILT FOR WHAT’S NEXT
+            </div>
+          </div>
+          <div className="systems-art" aria-hidden="true">
+            <svg viewBox="0 0 560 380" fill="none">
+              <defs>
+                <linearGradient
+                  id="path-gradient"
+                  x1="30"
+                  y1="340"
+                  x2="530"
+                  y2="40"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stopColor="#34d399" stopOpacity="0" />
+                  <stop offset="0.55" stopColor="#34d399" />
+                  <stop offset="1" stopColor="#34d399" stopOpacity="0.15" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M30 340 280 195 530 340 280 485Z"
+                stroke="#22d3ee"
+                strokeOpacity=".12"
+              />
+              <path
+                d="M30 260 280 115 530 260 280 405Z"
+                stroke="#22d3ee"
+                strokeOpacity=".2"
+              />
+              <path
+                d="M30 180 280 35 530 180 280 325Z"
+                stroke="url(#path-gradient)"
+                strokeWidth="1.5"
+              />
+              <path
+                d="M30 180V340M280 35V195M530 180V340M280 325V485"
+                stroke="#22d3ee"
+                strokeOpacity=".15"
+                strokeDasharray="4 6"
+              />
+              <path
+                d="m155 252 125-72 125 72-125 73Z"
+                fill="#34d399"
+                fillOpacity=".025"
+                stroke="#34d399"
+                strokeOpacity=".55"
+              />
+              <path
+                d="m155 172 125-72 125 72-125 73Z"
+                fill="#34d399"
+                fillOpacity=".045"
+                stroke="#34d399"
+                strokeOpacity=".8"
+              />
+              <path
+                d="M155 172v80m125-7v80m125-153v80"
+                stroke="#34d399"
+                strokeOpacity=".3"
+              />
+              <circle cx="280" cy="100" r="5" fill="#34d399" />
+              <circle cx="155" cy="172" r="4" fill="#34d399" />
+              <circle cx="405" cy="172" r="4" fill="#34d399" />
+              <circle cx="280" cy="325" r="4" fill="#34d399" />
+            </svg>
+            <span className="art-label art-label-one">01 / PEOPLE</span>
+            <span className="art-label art-label-two">02 / PLATFORMS</span>
+            <span className="art-label art-label-three">03 / POSSIBILITY</span>
+            <div className="art-cross art-cross-one">+</div>
+            <div className="art-cross art-cross-two">+</div>
+          </div>
+          <span className="cover-index">SYSTEMS THINKING. HUMAN IMPACT.</span>
+        </div>
+
+        <div className="profile-content">
+          <section className="profile-intro" aria-labelledby="profile-name">
+            <div className="profile-topline">
+              <div className="portrait">
+                <Image
+                  src="/images/kwame-portrait-v3.png"
+                  alt="Kwame Owusu-Boakye"
+                  width={144}
+                  height={144}
+                  priority
+                />
+              </div>
+              <div className="profile-actions">
+                <a
+                  className="button button-secondary"
+                  href="/Kwame-Owusu-Boakye-Resume.pdf"
+                  download
+                >
+                  <ArrowDownToLine size={15} /> Résumé
+                </a>
+                <a href="mailto:kwame@owusuboakye.com" className="button button-primary">
+                  <Mail size={15} /> Get in touch <ArrowUpRight size={14} />
+                </a>
+              </div>
+            </div>
+            <div className="identity">
+              <div className="identity-title">
+                <h1 id="profile-name">
+                  Kwame Owusu-Boakye<span>.</span>
+                </h1>
+                <span className="pronunciation">@9naquame</span>
+              </div>
+              <p className="profile-role">
+                Software engineer. Architect. <span>Engineering leader.</span>
+              </p>
+              <p className="profile-location">
+                <MapPin size={13} /> Newfoundland &amp; Labrador, Canada
+              </p>
+            </div>
+          </section>
+          <nav className="mobile-section-nav" aria-label="Portfolio sections">
+            <a href="#work">
+              Selected work <ArrowUpRight size={12} />
+            </a>
+            <a href="#experience">Experience</a>
+            <a href="#community">Community</a>
+          </nav>
+
+          <section
+            className="about-section section"
+            id="about"
+            aria-labelledby="about-heading"
+          >
+            <div className="about-copy">
+              <div className="section-kicker">
+                ABOUT / THE ENGINEER BEHIND THE WORK
+              </div>
+              <h2 id="about-heading">Nearly 15 years. Still building.</h2>
+              <p>
+                From writing financial software to architecting distributed
+                platforms and leading engineering teams, I work across the full
+                life of a system. Nearly 15 years in, I still care about the
+                details: clear boundaries, reliable infrastructure, and software
+                people can depend on.
+              </p>
+              <p>
+                Currently a Senior Manager of Software Engineering at{" "}
+                <span className="text-bright">Nasdaq Verafin</span>, helping
+                teams modernize financial data platforms. Outside of that,
+                you’ll find me building products, mentoring developers, and
+                contributing to my community.
+              </p>
+              <div className="expertise-list">
+                {expertise.map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
+              </div>
+            </div>
+            <aside className="profile-facts" aria-label="Profile links">
+              <div className="fact">
+                <span className="fact-label">Based in</span>
+                <span className="fact-value">
+                  <span className="canada-leaf" aria-hidden="true">
+                    ✳
+                  </span>{" "}
+                  Newfoundland &amp; Labrador, Canada
+                </span>
+              </div>
+              <div className="fact">
+                <span className="fact-label">Working at</span>
+                <a
+                  href="https://verafin.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Nasdaq Verafin <ArrowUpRight size={13} />
+                </a>
+              </div>
+              <div className="fact">
+                <span className="fact-label">On the internet</span>
+                <div className="social-links">
                   <a
-                    href="https://www.credly.com/users/9naquame"
+                    href="https://github.com/9naquame"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition-colors"
                   >
-                    <Award size={18} />
-                    <span>View all credentials on Credly</span>
-                    <ExternalLink size={14} />
+                    <Github size={14} /> GitHub <ArrowUpRight size={12} />
+                  </a>
+                  <a
+                    href="https://linkedin.com/in/9naquame"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Linkedin size={14} /> LinkedIn <ArrowUpRight size={12} />
                   </a>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
+              <div className="fact">
+                <span className="fact-label">Say hello</span>
+                <a href="mailto:kwame@owusuboakye.com" className="fact-contact">
+                  kwame@owusuboakye.com <ArrowUpRight size={13} />
+                </a>
+              </div>
+            </aside>
+          </section>
 
-      <section id="skills" className="py-32 px-6 bg-[#0d0d0e]">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-emerald-400 font-mono text-sm mb-4 tracking-wider">TECHNICAL EXPERTISE</p>
-            <h2 className="text-4xl font-bold">Skills & Technologies</h2>
-          </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="bg-[#111113] border border-white/5 rounded-2xl p-8 hover:border-emerald-500/30 transition-colors">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                    <Code2 className="text-emerald-400" size={20} />
-                  </div>
-                  <h3 className="text-xl font-semibold">Programming Languages</h3>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {skills.languages.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-sm text-zinc-300"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
+          <section
+            className="section work-section"
+            id="work"
+            aria-labelledby="work-heading"
+          >
+            <div className="section-heading">
+              <div>
+                <div className="section-kicker">01 / SELECTED WORK</div>
+                <h2 id="work-heading">
+                  Selected work
+                  <span className="heading-count">
+                    {String(featuredProjects.length).padStart(2, "0")}
+                  </span>
+                </h2>
               </div>
-              <div className="bg-[#111113] border border-white/5 rounded-2xl p-8 hover:border-cyan-500/30 transition-colors">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center">
-                    <svg className="text-cyan-400" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polygon points="12 2 2 7 12 12 22 7 12 2" />
-                      <polyline points="2 17 12 22 22 17" />
-                      <polyline points="2 12 12 17 22 12" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-semibold">Frameworks & Libraries</h3>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {skills.frameworks.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-sm text-zinc-300"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="bg-[#111113] border border-white/5 rounded-2xl p-8 hover:border-blue-500/30 transition-colors">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                    <svg className="text-blue-400" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-semibold">Cloud & Infrastructure</h3>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {skills.cloud.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-sm text-zinc-300"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="bg-[#111113] border border-white/5 rounded-2xl p-8 hover:border-purple-500/30 transition-colors">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                    <svg className="text-purple-400" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <ellipse cx="12" cy="5" rx="9" ry="3" />
-                      <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
-                      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-semibold">Databases & Data Platforms</h3>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {skills.databases.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-sm text-zinc-300"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="bg-[#111113] border border-white/5 rounded-2xl p-8 hover:border-orange-500/30 transition-colors">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                    <svg className="text-orange-400" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
-                      <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
-                      <line x1="6" y1="6" x2="6.01" y2="6" />
-                      <line x1="6" y1="18" x2="6.01" y2="18" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-semibold">Embedded & Hardware</h3>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {skills.embedded.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-sm text-zinc-300"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="bg-[#111113] border border-white/5 rounded-2xl p-8 hover:border-amber-500/30 transition-colors">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                    <Briefcase className="text-amber-400" size={20} />
-                  </div>
-                  <h3 className="text-xl font-semibold">Other Tools</h3>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {skills.other.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-sm text-zinc-300"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              <span className="section-aside">Built to be useful.</span>
             </div>
-        </div>
-      </section>
-
-      <section id="experience" className="py-32 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-emerald-400 font-mono text-sm mb-4 tracking-wider">CAREER PATH</p>
-            <h2 className="text-4xl font-bold">Work Experience</h2>
-          </div>
-          <div className="space-y-8">
-            {experience.map((job, index) => (
-              <div
-                key={index}
-                className="relative bg-[#111113] border border-white/5 rounded-2xl p-8 hover:border-emerald-500/30 transition-all group"
-              >
-                <div className="absolute top-8 left-0 w-1 h-12 bg-gradient-to-b from-emerald-400 to-cyan-400 rounded-r-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
-                  <div>
-                    <h3 className="text-xl font-semibold">
-                      {job.title}
-                      {job.subtitle && <span className="text-zinc-500 text-base font-normal"> {job.subtitle}</span>}
-                    </h3>
-                    <p className="text-emerald-400">{job.company}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-zinc-400 font-mono text-sm">{job.period}</p>
-                    <p className="text-zinc-500 text-sm">{job.location}</p>
-                  </div>
-                </div>
-                <ul className="space-y-2">
-                  {job.achievements.map((achievement, i) => (
-                    <li key={i} className="flex items-start gap-3 text-zinc-400">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 flex-shrink-0" />
-                      {achievement}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-        </section>
-
-        <section id="projects" className="py-32 px-6 bg-[#0d0d0e]">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <p className="text-emerald-400 font-mono text-sm mb-4 tracking-wider">PERSONAL WORK</p>
-              <h2 className="text-4xl font-bold">Projects</h2>
-            </div>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {projects.map((project, index) => (
-                    <div
-                      key={index}
-                      className="bg-[#111113] border border-white/5 rounded-2xl overflow-hidden hover:border-blue-500/30 transition-all group"
-                    >
-                      {project.image ? (
-                        <div className="relative h-48 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 overflow-hidden">
-                          <img 
-                            src={project.image} 
-                            alt={project.title}
-                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                          />
-                          <div className="absolute top-3 right-3">
-                            <div className="w-10 h-10 rounded-lg bg-blue-500/20 backdrop-blur-sm border border-white/10 flex items-center justify-center">
-                              <Folder className="text-blue-400" size={20} />
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="h-48 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 flex items-center justify-center">
-                          <Folder className="text-blue-400" size={48} />
-                        </div>
-                      )}
-                      <div className="p-8">
-                        <div className="flex items-center gap-2 mb-3">
-                          <h3 className="text-xl font-semibold">{project.title}</h3>
-                          {project.isPrivate && (
-                            <span className="flex items-center gap-1 px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-400">
-                              <Lock size={12} />
-                              Private
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-zinc-400 mb-4 leading-relaxed">{project.description}</p>
-                        <div className="flex flex-wrap gap-2 mb-6">
-                          {project.tech.map((tech) => (
-                            <span
-                              key={tech}
-                              className="px-2 py-1 bg-blue-500/10 border border-blue-500/30 rounded text-xs text-blue-300"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                          <div className="flex gap-4">
-                            {project.isPrivate ? (
-                              project.demo && (
-                                <a
-                                  href={project.demo}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-2 text-zinc-400 hover:text-emerald-400 transition-colors text-sm"
-                                >
-                                  <ExternalLink size={16} />
-                                  Website
-                                </a>
-                              )
-                            ) : (
-                              project.demo && (
-                                <a
-                                  href={project.demo}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-2 text-zinc-400 hover:text-emerald-400 transition-colors text-sm"
-                                >
-                                  <ExternalLink size={16} />
-                                  Demo
-                                </a>
-                              )
-                            )}
-                          </div>
-                      </div>
+            <div className="project-grid">
+              {featuredProjects.map((project) => (
+                <article
+                  className={`project-card ${project.imageKind ? `project-${project.imageKind}` : ""}`}
+                  key={project.name}
+                  data-project={project.slug}
+                >
+                  <Link
+                    className="project-image-link"
+                    href={`/work/${project.slug}`}
+                    aria-label={`Explore ${project.name}`}
+                  >
+                    <div className="project-image-stage">
+                      <Image
+                        src={project.image}
+                        alt={
+                          project.imageAlt ??
+                          `${project.name} application preview`
+                        }
+                        width={700}
+                        height={470}
+                        sizes="(max-width: 650px) 90vw, (max-width: 900px) 45vw, 370px"
+                        className="project-image"
+                      />
                     </div>
-                  ))}
-                </div>
-          </div>
-        </section>
-
-        <section id="certifications" className="py-32 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-emerald-400 font-mono text-sm mb-4 tracking-wider">CREDENTIALS</p>
-            <h2 className="text-4xl font-bold">Certifications</h2>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {certifications.map((cert, index) => (
-              <div
-                key={index}
-                className="bg-[#111113] border border-white/5 rounded-xl p-6 hover:border-emerald-500/30 transition-all group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Award className="text-emerald-400" size={24} />
-                </div>
-                <h3 className="font-medium text-sm mb-2 leading-tight">{cert.name}</h3>
-                <p className="text-zinc-500 text-xs font-mono">{cert.date}</p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-16">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold">Professional Development</h3>
-            </div>
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="bg-[#111113] border border-white/5 rounded-xl p-6">
-                <h4 className="font-medium mb-2">Leadership Bootcamp</h4>
-                <p className="text-emerald-400 text-sm mb-2">Nasdaq Verafin</p>
-                <p className="text-zinc-500 text-xs font-mono mb-3">12/2023 - 02/2024</p>
-                <p className="text-zinc-400 text-sm">Intensive program on communication, team building, conflict resolution, and strategic decision-making.</p>
-              </div>
-              <div className="bg-[#111113] border border-white/5 rounded-xl p-6">
-                <h4 className="font-medium mb-2">Dale Carnegie Course</h4>
-                <p className="text-emerald-400 text-sm mb-2">Dale Carnegie Training</p>
-                <p className="text-zinc-500 text-xs font-mono mb-3">05/2022 - 09/2022</p>
-                <p className="text-zinc-400 text-sm">Focused on communication, leadership, public speaking, persuasion, and relationship building.</p>
-              </div>
-              <div className="bg-[#111113] border border-white/5 rounded-xl p-6">
-                <h4 className="font-medium mb-2">AWS Architecture Workshop</h4>
-                <p className="text-emerald-400 text-sm mb-2">AWS Training & Certification</p>
-                <p className="text-zinc-500 text-xs font-mono mb-3">05/2022</p>
-                <p className="text-zinc-400 text-sm">Workshop on AWS cloud architecture principles including scalability, security, and high availability.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-32 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-emerald-400 font-mono text-sm mb-4 tracking-wider">GIVING BACK</p>
-            <h2 className="text-4xl font-bold">Volunteer Experience</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-8">
-            {volunteer.map((vol, index) => (
-              <div
-                key={index}
-                className="bg-[#111113] border border-white/5 rounded-2xl p-8 hover:border-pink-500/30 transition-all"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center">
-                    <Heart className="text-pink-400" size={20} />
+                    <span className="project-visit">
+                      <ArrowRight size={17} />
+                    </span>
+                  </Link>
+                  <div className="project-body">
+                    <span className="project-category">
+                      <span>{project.number} /</span> {project.category}
+                    </span>
+                    <Link
+                      className="project-title"
+                      href={`/work/${project.slug}`}
+                    >
+                      <h3>{project.name}</h3>
+                      <ArrowRight size={17} />
+                    </Link>
+                    <p>{project.description}</p>
+                    {project.designCredit && (
+                      <span className="project-design-credit">
+                        {project.designCredit}
+                      </span>
+                    )}
+                    <div className="project-tags">
+                      {(project.laterRedesign
+                        ? ["Earlier-version involvement"]
+                        : project.tags
+                      ).map((tag) => (
+                        <span key={tag}>{tag}</span>
+                      ))}
+                    </div>
+                    <div className="project-notes project-links">
+                      <Link
+                        href={`/work/${project.slug}`}
+                        className="text-link"
+                      >
+                        Explore the project <ArrowRight size={14} />
+                      </Link>
+                      <a
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-link"
+                        aria-label={`Visit ${project.name} website`}
+                      >
+                        Website <ArrowUpRight size={13} />
+                      </a>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold">{vol.title}</h3>
-                    <p className="text-pink-400 text-sm">{vol.organization}</p>
-                  </div>
-                </div>
-                <p className="text-zinc-500 text-sm font-mono mb-3">
-                  {vol.period} {vol.location && `| ${vol.location}`}
-                </p>
-                <p className="text-zinc-400">{vol.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+                </article>
+              ))}
+            </div>
+            <div className="other-projects">
+              <span>EARLIER WORK</span>
+              {otherProjects.map((project) => (
+                <Link key={project.slug} href={`/work/${project.slug}`}>
+                  {project.name}
+                  <ArrowUpRight size={14} />
+                </Link>
+              ))}
+            </div>
+          </section>
 
-      <section id="contact" className="py-32 px-6 bg-[#0d0d0e]">
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="text-emerald-400 font-mono text-sm mb-4 tracking-wider">GET IN TOUCH</p>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Let&apos;s Work Together</h2>
-          <p className="text-zinc-400 mb-12 max-w-2xl mx-auto">
-            I&apos;m always interested in hearing about new opportunities, challenging projects, or just having a conversation about technology and software development.
-          </p>
-            <div className="flex flex-wrap justify-center gap-6 mb-12">
+          <section
+            className="section experience-section"
+            id="experience"
+            aria-labelledby="experience-heading"
+          >
+            <div className="section-heading">
+              <div>
+                <div className="section-kicker">02 / EXPERIENCE</div>
+                <h2 id="experience-heading">Experience</h2>
+              </div>
               <a
-                href="mailto:koowusuboakye@gmail.com"
-                className="flex items-center gap-3 px-6 py-4 bg-[#111113] border border-white/10 rounded-xl hover:border-emerald-500/50 transition-all group"
+                href="/Kwame-Owusu-Boakye-Resume.pdf"
+                className="text-link"
+                download
               >
-                <Mail className="text-emerald-400 group-hover:scale-110 transition-transform" size={24} />
-                <div className="text-left">
-                  <p className="text-xs text-zinc-500">Email</p>
-                  <p className="font-medium">koowusuboakye@gmail.com</p>
-                </div>
+                Full résumé <ArrowDownToLine size={14} />
               </a>
             </div>
-          <div className="flex justify-center gap-4">
-            <a
-              href="https://github.com/9naquame"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all"
-            >
-              <Github size={20} />
-            </a>
-            <a
-              href="https://linkedin.com/in/9naquame"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all"
-            >
-              <Linkedin size={20} />
-            </a>
-            <a
-              href="https://www.credly.com/users/9naquame"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all"
-            >
-              <Award size={20} />
-            </a>
-          </div>
-        </div>
-      </section>
+            <div className="experience-grid">
+              {experience.map((job) => (
+                <details className="experience-card" key={job.company}>
+                  <summary>
+                    <div className={`company-mark ${job.className}`}>
+                      {job.monogram}
+                    </div>
+                    <div className="experience-main">
+                      <h3>{job.company}</h3>
+                      <p>{job.role}</p>
+                    </div>
+                    <span className="experience-domain">{job.note}</span>
+                    <div className="experience-meta">
+                      <span>{job.period}</span>
+                      <ChevronDown size={15} />
+                    </div>
+                  </summary>
+                  <div className="experience-detail">
+                    {job.roles.map((role) => (
+                      <div key={role.title}>
+                        <h4>{role.title}</h4>
+                        <span>{role.dates}</span>
+                        <p>{role.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
 
-      <footer className="py-8 px-6 border-t border-white/5">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-zinc-500 text-sm">
-              © {new Date().getFullYear()} @9naquame. All rights reserved.
-            </p>
-          <p className="text-zinc-600 text-sm">
-            Built with Next.js & Tailwind CSS
-          </p>
+          <section
+            className="section background-section"
+            aria-label="Education and credentials"
+          >
+            <div className="education">
+              <div className="section-kicker">
+                <GraduationCap size={14} /> ALWAYS LEARNING
+              </div>
+              <h2>Grounded in engineering.</h2>
+              <div className="education-row">
+                <h3>MASc, Computer Engineering</h3>
+                <p>
+                  Memorial University of Newfoundland <span>2019 — 2021</span>
+                </p>
+              </div>
+              <div className="education-row">
+                <h3>BSc, Computer Engineering</h3>
+                <p>
+                  University of Ghana <span>2008 — 2012</span>
+                </p>
+              </div>
+            </div>
+            <div className="credentials">
+              <div className="credentials-heading">
+                <span className="credential-mark">aws</span>
+                <div>
+                  <h3>Cloud, data & beyond</h3>
+                  <p>Selected AWS certifications</p>
+                </div>
+                <a
+                  href="https://www.credly.com/users/9naquame"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="View credentials on Credly"
+                >
+                  <ArrowUpRight size={18} />
+                </a>
+              </div>
+              <div className="credential-list">
+                {credentials.map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
+              </div>
+              <a
+                className="text-link"
+                href="https://www.credly.com/users/9naquame"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View credentials on Credly <ArrowUpRight size={13} />
+              </a>
+            </div>
+          </section>
+
+          <section
+            className="section community-section"
+            id="community"
+            aria-labelledby="community-heading"
+          >
+            <div className="section-heading">
+              <div>
+                <div className="section-kicker">03 / COMMUNITY</div>
+                <h2 id="community-heading">Progress is a team sport.</h2>
+              </div>
+              <HeartHandshake
+                className="section-icon"
+                size={24}
+                strokeWidth={1.3}
+              />
+            </div>
+            <div className="community-grid">
+              {communityGroups.map((group) => {
+                const Icon = group.id === "speaking" ? AudioLines : Globe2;
+                return (
+                  <article key={group.id}>
+                    <div className="community-icon">
+                      <Icon size={20} />
+                    </div>
+                    <div className="community-group-content">
+                      <div className="community-group-intro">
+                        <h3>{group.title}</h3>
+                        <p>{group.introduction}</p>
+                      </div>
+                      <ul>
+                        {group.entries.map((entry) => (
+                          <li className="community-entry" key={entry.name}>
+                            <div className="community-entry-heading">
+                              <h4>
+                                {entry.eventUrl ? (
+                                  <a
+                                    href={entry.eventUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {entry.name}
+                                  </a>
+                                ) : (
+                                  entry.name
+                                )}
+                              </h4>
+                              <span className="community-entry-role">
+                                {entry.role}
+                              </span>
+                            </div>
+                            <a
+                              className="community-entry-org"
+                              href={entry.organizationUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {entry.organization}
+                            </a>
+                            <p className="community-entry-contribution">
+                              {entry.contribution}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+
+          <section
+            className="contact-section"
+            id="contact"
+            aria-labelledby="contact-heading"
+          >
+            <div>
+              <span className="section-kicker">
+                GOOD WORK STARTS WITH A CONVERSATION
+              </span>
+              <h2 id="contact-heading">Let’s build what’s next.</h2>
+              <p>
+                A project, a possibility, or just a hello. My inbox is open.
+              </p>
+            </div>
+            <a href="mailto:kwame@owusuboakye.com" className="contact-arrow" aria-label="Email Kwame">
+              <ArrowUpRight size={30} strokeWidth={1.4} />
+            </a>
+            <a href="mailto:kwame@owusuboakye.com" className="contact-email">
+              kwame@owusuboakye.com <ArrowRight size={17} />
+            </a>
+          </section>
         </div>
+      </main>
+      <footer className="site-footer">
+        <span>© {new Date().getFullYear()} Kwame Owusu-Boakye</span>
+        <span>Thoughtfully built. Always evolving.</span>
+        <a href="#">
+          Back to top <ArrowDown size={13} className="back-top-arrow" />
+        </a>
       </footer>
     </div>
   );

@@ -1,57 +1,33 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { VisualEditsMessenger } from "orchids-visual-edits";
-import ErrorReporter from "@/components/ErrorReporter";
-import Script from "next/script";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const outfit = Outfit({ variable: "--font-outfit", subsets: ["latin"] });
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Kwame Owusu-Boakye | Senior Software Engineer",
-  description: "Portfolio of Kwame Owusu-Boakye - Senior Software Engineer with expertise in cloud architecture, big data, and distributed systems.",
-  icons: {
-    icon: "/favicon.svg",
+  title: "Kwame Owusu-Boakye — Engineering Leader & Builder",
+  description:
+    "Engineering leadership, financial technology, and thoughtful software. Selected projects, experience, and community work by Kwame Owusu-Boakye, based in Newfoundland, Canada.",
+  icons: { icon: "/favicon.svg" },
+  openGraph: {
+    title: "Kwame Owusu-Boakye — Engineering Leader & Builder",
+    description:
+      "People, platforms, and the space between. Explore my work in fintech, data, and cloud infrastructure.",
+    type: "website",
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Script
-          id="orchids-browser-logs"
-          src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/scripts/orchids-browser-logs.js"
-          strategy="afterInteractive"
-          data-orchids-project-id="5a521f70-2019-419c-96a5-9299be43b3a4"
-        />
-        <ErrorReporter />
-        <Script
-          src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/scripts//route-messenger.js"
-          strategy="afterInteractive"
-          data-target-origin="*"
-          data-message-type="ROUTE_CHANGE"
-          data-include-search-params="true"
-          data-only-in-iframe="true"
-          data-debug="true"
-          data-custom-data='{"appName": "YourApp", "version": "1.0.0", "greeting": "hi"}'
-        />
+      <body className={`${outfit.variable} ${jetbrainsMono.variable}`}>
         {children}
-        <VisualEditsMessenger />
       </body>
     </html>
   );
