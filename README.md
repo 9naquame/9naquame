@@ -4,15 +4,46 @@
 
 # Hi there 👋 I’m Kwame.
 
-An engineer who enjoys building useful things and helping people grow. Based in **Newfoundland & Labrador, Canada**. Building since 2012, and still curious.
+**I build the systems behind the screens.** APIs, data pipelines, cloud platforms — and teams that make them work.
 
-- 💼 Leading software engineering teams at **[Nasdaq Verafin](https://verafin.com/)**.
-- 🛠️ Usually somewhere between **Python, Scala, TypeScript, and AWS**.
-- 🚐 Building **[RideOn](https://rideon.cmfinl.ca)** to help communities get people where they need to go.
-- 💚 Building **[TransactIQ](https://www.transactiq.ca)** to make contribution management easier for churches and charities.
-- 🌱 Outside the day job: mentoring, teaching, and building with my community.
-- 💬 Always up for a conversation about software, a tricky system, or your next idea.
+Engineering leader at **[Nasdaq Verafin](https://verafin.com/)**.<br>
+📍 Newfoundland & Labrador, Canada · 🛠️ Hands-on since 2012
 
-**Take a look around. Say hello. Let’s build something useful.**
+[Explore my corner of the internet ↗](https://9naqua.me) · [LinkedIn](https://www.linkedin.com/in/9naquame/) · [Say hello](mailto:kwame@owusuboakye.com)
 
-[🌐 Portfolio](https://9naqua.me) · [LinkedIn](https://www.linkedin.com/in/9naquame/) · [✉️ Email](mailto:kwame@owusuboakye.com)
+### A little less talk. A little more build. ⚡
+
+<table>
+<tr>
+<td width="50%" valign="top">
+<a href="https://9naqua.me/work/rideon"><img src="./public/images/rideon-platform.svg" width="420" alt="RideOn — connected rider, driver, and organization experiences" /></a>
+
+**[RideOn ↗](https://9naqua.me/work/rideon)**<br>
+Getting people there, together. Community transportation across rider, driver, and admin apps.
+
+<sub>Flutter · FastAPI · PostgreSQL</sub>
+
+</td>
+<td width="50%" valign="top">
+<a href="https://9naqua.me/work/transactiq"><img src="./public/images/transactiq-platform.svg" width="420" alt="TransactIQ — contributions, financial records, and tax receipts" /></a>
+
+**[TransactIQ ↗](https://9naqua.me/work/transactiq)**<br>
+Less administration. More impact. Contributions and tax receipts for churches and charities.
+
+<sub>React · FastAPI · PostgreSQL</sub>
+
+</td>
+</tr>
+</table>
+
+### Usually in the mix 🧩
+
+`Python` · `Scala` · `TypeScript` · `AWS` · `Next.js` · `Flutter`
+
+- 🔧 **The interesting problems:** distributed data, clean boundaries, and getting all the moving parts to agree.
+- 🌱 **The people side:** mentoring developers, teaching through Digital Makers Lab, and facilitating Community Build Lab.
+- 💬 **An easy conversation starter:** something you’re building, something that’s broken, or an idea you can’t leave alone.
+
+---
+
+**Still curious. Still building.** [Come say hi →](mailto:kwame@owusuboakye.com)
