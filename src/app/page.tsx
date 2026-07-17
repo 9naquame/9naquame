@@ -208,7 +208,7 @@ export default function Portfolio() {
             <div className="profile-topline">
               <div className="portrait">
                 <Image
-                  src="/images/kwame-portrait-v3.png"
+                  src="/images/kwame-portrait.png"
                   alt="Kwame Owusu-Boakye"
                   width={144}
                   height={144}
