@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="290" viewBox="0 0 1000 290" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Complex systems. Clear direction.</title>
+  <desc id="desc">Engineering, architecture, and leadership. Kwame Owusu-Boakye, @9naquame. A dark technical grid with emerald and cyan connected nodes.</desc>
+  <defs>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" stroke="#1c292b" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="wash" x1="650" y1="0" x2="1000" y2="290" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0a0a0b"/>
+      <stop offset="1" stop-color="#102925"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="44" y1="0" x2="956" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#34d399"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <rect x=".5" y=".5" width="999" height="289" rx="18" fill="url(#wash)" stroke="#273638"/>
+  <rect x="620" y="17" width="360" height="256" rx="14" fill="url(#grid)" opacity=".6"/>
+  <path d="M44 1H956" stroke="url(#accent)" stroke-width="2"/>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+    <text x="44" y="47" fill="#34d399" font-size="12" letter-spacing="2">ENGINEERING / ARCHITECTURE / LEADERSHIP</text>
+    <text x="44" y="254" fill="#95a5ab" font-size="12" letter-spacing="1">KWAME OWUSU-BOAKYE</text>
+    <text x="956" y="254" text-anchor="end" fill="#34d399" font-size="12">@9naquame</text>
+  </g>
+  <g font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="49" font-weight="650" letter-spacing="-2">
+    <text x="42" y="122" fill="#f0f6fc">Complex systems.</text>
+    <text x="42" y="182" fill="#34d399">Clear direction.</text>
+  </g>
+  <g stroke="#2d6558" stroke-width="1.5">
+    <path d="M703 88H754L800 145H867M703 196H754L800 145"/>
+    <path d="M800 145V69H903" stroke-dasharray="4 5" opacity=".7"/>
+  </g>
+  <rect x="663" y="66" width="52" height="44" rx="9" fill="#10251e" stroke="#34705b"/>
+  <path d="m682 81-8 7 8 7m14-14 8 7-8 7m-5-18-5 22" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="663" y="174" width="52" height="44" rx="9" fill="#102124" stroke="#2e6570"/>
+  <g stroke="#67c8d8" stroke-width="1.5">
+    <ellipse cx="689" cy="186" rx="12" ry="4"/>
+    <path d="M677 186v16c0 2 5 4 12 4s12-2 12-4v-16m-24 8c0 2 5 4 12 4s12-2 12-4"/>
+  </g>
+  <rect x="856" y="123" width="44" height="44" rx="22" fill="#132c23" stroke="#34d399"/>
+  <path d="m870 145 6 6 11-12" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="800" cy="145" r="5" fill="#34d399"/>
+  <circle cx="903" cy="69" r="3" fill="#22d3ee"/>
+</svg>
