@@ -1,21 +1,33 @@
 import { createHash } from "node:crypto";
 import type { Client } from "@libsql/client";
 
+export const VISIT_COOKIE = "portfolio_session_v2";
+export type SiteCounts = { count: number; visits: number };
+
 export const PUBLIC_SITE_ORIGIN = "https://9naqua.me";
 
 export function createViewStore(client: Pick<Client, "execute">) {
   return {
-    async count(increment: boolean): Promise<number> {
+    async count(increment: boolean, newVisit = false): Promise<SiteCounts> {
       const result = await client.execute(
         increment
-          ? `INSERT INTO site_views (key, count) VALUES ('portfolio', 1)
-           ON CONFLICT(key) DO UPDATE SET count = count + 1 RETURNING count`
-          : "SELECT count FROM site_views WHERE key = 'portfolio'",
+          ? {
+              sql: `INSERT INTO site_views (key, count, visits) VALUES ('portfolio', 1, ?)
+                ON CONFLICT(key) DO UPDATE SET count = count + 1,
+                visits = visits + excluded.visits RETURNING count, visits`,
+              args: [newVisit ? 1 : 0],
+            }
+          : "SELECT count, visits FROM site_views WHERE key = 'portfolio'",
       );
       const count = Number(result.rows[0]?.count ?? 0);
-      if (!Number.isSafeInteger(count) || count < 0)
-        throw new Error("Invalid view count");
-      return count;
+      const visits = Number(result.rows[0]?.visits ?? 0);
+      if (
+        ![count, visits].every(
+          (value) => Number.isSafeInteger(value) && value >= 0,
+        )
+      )
+        throw new Error("Invalid site counts");
+      return { count, visits };
     },
   };
 }
@@ -102,9 +114,17 @@ export async function handleViews(
     request.headers.get("user-agent") || "",
   );
   const increment = request.method === "POST" && !bot;
+  const visited = request.headers
+    .get("cookie")
+    ?.split(";")
+    .some((value) => value.trim() === `${VISIT_COOKIE}=1`);
   try {
-    const count = await store.count(increment);
-    return json({ count }, 200);
+    const counts = await store.count(increment, increment && !visited);
+    const headers: Record<string, string> = {};
+    if (increment)
+      headers["Set-Cookie"] =
+        `${VISIT_COOKIE}=1; Path=/; HttpOnly; SameSite=Lax${new URL(origin ?? request.url).protocol === "https:" ? "; Secure" : ""}`;
+    return json(counts, 200, headers);
   } catch {
     return json({ available: false }, 503);
   }

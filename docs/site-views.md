@@ -1,6 +1,6 @@
-# Portfolio page views
+# Portfolio views and visits
 
-One shared total is displayed beside the copyright on the homepage and all project
+Two totals in one database row are displayed beside the copyright on the homepage and all project
 pages. No analytics dashboard or separate backend service is required.
 
 ## Enable on Netlify
@@ -20,19 +20,28 @@ Do not use `NEXT_PUBLIC_` for these values. The database connector imports
 misconfigured, timed out, rate-limited, or unavailable. There is no invented initial
 number. It starts at zero and counts from activation onward.
 
+## Upgrade an existing counter
+
+Run `docs/migrations/001-add-visits.sql` **once**, before deploying the dual-count
+code. It adds `visits` with a zero default and leaves the `count` column intact.
+New databases use `docs/site-views.sql` instead; do not run the migration on them.
+The old deployed code continues working while the new column is added.
+
 ## Counting behavior
 
 - Every document load, refresh, and pathname change (including back/forward
   navigation) increments the total. Same-page anchor and query-string changes do
   not count as separate views. Next.js link prefetching does not count a view.
-- No session deduplication or counter cookies are used. Strict Mode's repeated
-  effects share one request for the current pathname, avoiding accidental doubles.
-  Existing visit cookies from the old version are ignored.
-- The existing stored total is preserved. It represents session visits before the
-  switch and page views afterward; the older sessions cannot be reconstructed into
-  historical page-view totals.
-- The increment is an atomic SQL upsert, preventing lost updates from concurrent
-  visitors. GET only reads. POST accepts no body or user-selected keys/counts, and
+- A session cookie (`portfolio_session_v2`) adds one visit per browsing session.
+  Refreshes and page navigation add views without another visit. No session storage
+  is needed. GET never creates a cookie or increments either total.
+- Visits start at zero when dual counting is enabled. Existing view totals are
+  preserved; past visits cannot be reconstructed. The obsolete `portfolio_visit`
+  cookie is ignored so existing visitors are counted on their next page load.
+- Session cookies can survive a browser restart through session restore. New tabs
+  opened simultaneously can race before the first cookie arrives. Visits are an
+  approximation of browsing sessions, not a count of individual people.
+- The increment is an atomic SQL upsert, updating views and visits together without losing concurrent increments. GET only reads. POST accepts no body or user-selected keys/counts, and
   checks the Origin header against the canonical public origin (`https://9naqua.me`)
   in production. This avoids relying on Netlify’s internal request URL. Development
   checks against the request origin.
@@ -57,5 +66,6 @@ For local UI testing, run the schema against a disposable local database and sta
 Next.js with `SITE_VIEWS_ENABLED=true TURSO_DATABASE_URL=file:/private/tmp/views-test.db`.
 Local file URLs are accepted only outside production. Never enable tests against
 the live database. Load the homepage, refresh, visit a project, and go back: each
-should add one view. Disabling the flag should hide the counter without affecting
+should add one view while visits stay unchanged. A request without the session
+cookie starts another visit. Disabling the flag should hide the counter without affecting
 the footer.

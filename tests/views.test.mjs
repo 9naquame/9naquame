@@ -29,29 +29,41 @@ const request = (method = "POST", headers = {}, body) =>
 
 test("atomic increments survive concurrent page views in one table and row", async (t) => {
   const { client, store } = await database(t);
-  assert.equal(await store.count(false), 0);
-  await Promise.all(Array.from({ length: 30 }, () => store.count(true)));
-  assert.equal(await store.count(false), 30);
+  assert.deepEqual(await store.count(false), { count: 0, visits: 0 });
+  await Promise.all(Array.from({ length: 30 }, () => store.count(true, true)));
+  assert.deepEqual(await store.count(false), { count: 30, visits: 30 });
   const result = await client.execute("SELECT key, count FROM site_views");
   assert.equal(result.rows.length, 1);
   assert.equal(result.rows[0].key, "portfolio");
 });
 
-test("GET reads; every POST increments even with an old visit cookie", async (t) => {
+test("GET reads; refreshes increase views while session visits stay unchanged", async (t) => {
   const { store } = await database(t);
   const deps = { store, rateLimit: createViewRateLimiter() };
   assert.deepEqual(await (await handleViews(request("GET"), deps)).json(), {
     count: 0,
+    visits: 0,
   });
-  const first = await handleViews(request(), deps);
-  assert.deepEqual(await first.json(), { count: 1 });
-  assert.equal(first.headers.get("set-cookie"), null);
-  const repeat = await handleViews(
-    request("POST", { cookie: "other=1; portfolio_visit=1" }),
+  // Ignore obsolete cookies so visits start counting with the new deployment.
+  const first = await handleViews(
+    request("POST", { cookie: "portfolio_visit=1" }),
     deps,
   );
-  assert.deepEqual(await repeat.json(), { count: 2 });
-  assert.equal(await store.count(false), 2);
+  assert.deepEqual(await first.json(), { count: 1, visits: 1 });
+  const cookie = first.headers.get("set-cookie");
+  assert.match(
+    cookie,
+    /portfolio_session_v2=1; Path=\/; HttpOnly; SameSite=Lax; Secure/,
+  );
+  assert.ok(!cookie.includes("Max-Age"));
+  const repeat = await handleViews(
+    request("POST", { cookie: "portfolio_session_v2=1" }),
+    deps,
+  );
+  assert.deepEqual(await repeat.json(), { count: 2, visits: 1 });
+  const secondSession = await handleViews(request(), deps);
+  assert.deepEqual(await secondSession.json(), { count: 3, visits: 2 });
+  assert.deepEqual(await store.count(false), { count: 3, visits: 2 });
 });
 
 test("empty request streams are accepted as Next.js wraps empty POST bodies", async (t) => {
@@ -61,7 +73,7 @@ test("empty request streams are accepted as Next.js wraps empty POST bodies", as
     rateLimit: createViewRateLimiter(),
   });
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { count: 1 });
+  assert.deepEqual(await response.json(), { count: 1, visits: 1 });
 });
 
 test("cross-origin calls, bodies, and obvious bots cannot increment", async (t) => {
@@ -89,7 +101,7 @@ test("cross-origin calls, bodies, and obvious bots cannot increment", async (t) 
       .status,
     200,
   );
-  assert.equal(await store.count(false), 0);
+  assert.deepEqual(await store.count(false), { count: 0, visits: 0 });
 });
 
 test("rate limits are IP-scoped and expire after one minute", async (t) => {
@@ -145,8 +157,8 @@ test("trusted public origin works behind Netlify while other origins remain bloc
     });
   const response = await handleViews(proxied("https://9naqua.me"), deps);
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { count: 1 });
-  assert.equal(response.headers.get("set-cookie"), null);
+  assert.deepEqual(await response.json(), { count: 1, visits: 1 });
+  assert.match(response.headers.get("set-cookie"), /; Secure/);
   assert.equal(
     (await handleViews(proxied("https://evil.example"), deps)).status,
     403,
@@ -156,5 +168,24 @@ test("trusted public origin works behind Netlify while other origins remain bloc
       .status,
     403,
   );
-  assert.equal(await store.count(false), 1);
+  assert.deepEqual(await store.count(false), { count: 1, visits: 1 });
+});
+
+test("migration preserves the existing view total and initializes visits at zero", async (t) => {
+  const client = createClient({ url: "file::memory:" });
+  t.after(() => client.close());
+  await client.execute(
+    "CREATE TABLE site_views (key TEXT PRIMARY KEY, count INTEGER NOT NULL DEFAULT 0)",
+  );
+  await client.execute("INSERT INTO site_views VALUES ('portfolio', 123)");
+  await client.execute(
+    await readFile(
+      new URL("../docs/migrations/001-add-visits.sql", import.meta.url),
+      "utf8",
+    ),
+  );
+  const store = createViewStore(client);
+  assert.deepEqual(await store.count(false), { count: 123, visits: 0 });
+  assert.deepEqual(await store.count(true, true), { count: 124, visits: 1 });
+  assert.deepEqual(await store.count(true, false), { count: 125, visits: 1 });
 });
