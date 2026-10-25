@@ -38,7 +38,7 @@ Less administration. More impact. Contributions and tax receipts for churches an
 
 ### Usually in the mix 🧩
 
-`Python` · `Scala` · `TypeScript` · `AWS` · `Next.js` · `Flutter`
+`Python` · `Scala` · `Java` · `TypeScript` · `AWS` · `Next.js` · `Astro` · `Flutter`
 
 - 🔧 **The interesting problems:** distributed data, clean boundaries, and getting all the moving parts to agree.
 - 🌱 **The people side:** mentoring developers, teaching through Digital Makers Lab, and facilitating Community Build Lab.
