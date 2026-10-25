@@ -31,7 +31,9 @@ number. It starts at zero and counts from activation onward.
   cookie arrives. These are approximate visits, not distinct people.
 - The increment is an atomic SQL upsert, preventing lost updates from concurrent
   visitors. GET only reads. POST accepts no body or user-selected keys/counts, and
-  checks the Origin header against the request origin.
+  checks the Origin header against the canonical public origin (`https://9naqua.me`)
+  in production. This avoids relying on Netlify’s internal request URL. Development
+  checks against the request origin.
 - Obvious bot user agents are not counted. Each apparent IP is limited to ten
   requests per ten minutes per running function instance. Bounded process memory
   stores only hashed IP keys and counters; no IPs are stored in Turso.

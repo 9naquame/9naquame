@@ -132,3 +132,31 @@ test("unconfigured or failing storage returns unavailable without sensitive deta
   assert.equal(failure.status, 503);
   assert.deepEqual(await failure.json(), { available: false });
 });
+
+test("trusted public origin works behind Netlify while other origins remain blocked", async (t) => {
+  const { store } = await database(t);
+  const deps = {
+    store,
+    rateLimit: createViewRateLimiter(),
+    origin: "https://9naqua.me",
+  };
+  const proxied = (origin) =>
+    new Request("http://internal-netlify-handler/api/views", {
+      method: "POST",
+      headers: { origin, "user-agent": "Mozilla/5.0" },
+    });
+  const response = await handleViews(proxied("https://9naqua.me"), deps);
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { count: 1 });
+  assert.match(response.headers.get("set-cookie"), /; Secure/);
+  assert.equal(
+    (await handleViews(proxied("https://evil.example"), deps)).status,
+    403,
+  );
+  assert.equal(
+    (await handleViews(proxied("http://internal-netlify-handler"), deps))
+      .status,
+    403,
+  );
+  assert.equal(await store.count(false), 1);
+});

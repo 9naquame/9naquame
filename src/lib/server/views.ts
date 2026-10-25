@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import type { Client } from "@libsql/client";
 
 export const VIEW_COOKIE = "portfolio_visit";
+export const PUBLIC_SITE_ORIGIN = "https://9naqua.me";
 
 export function createViewStore(client: Pick<Client, "execute">) {
   return {
@@ -45,6 +46,7 @@ export function createViewRateLimiter(now = Date.now) {
 }
 
 type Dependencies = {
+  origin?: string;
   store: ReturnType<typeof createViewStore> | null;
   rateLimit: ReturnType<typeof createViewRateLimiter>;
 };
@@ -60,7 +62,7 @@ const json = (
 
 export async function handleViews(
   request: Request,
-  { store, rateLimit }: Dependencies,
+  { store, rateLimit, origin }: Dependencies,
 ) {
   if (request.method !== "GET" && request.method !== "POST")
     return json({}, 405);
@@ -68,7 +70,7 @@ export async function handleViews(
     try {
       if (
         new URL(request.headers.get("origin") || "").origin !==
-        new URL(request.url).origin
+        new URL(origin ?? request.url).origin
       )
         return json({}, 403);
     } catch {
@@ -110,7 +112,7 @@ export async function handleViews(
     const headers: Record<string, string> = {};
     if (request.method === "POST" && !bot) {
       headers["Set-Cookie"] =
-        `${VIEW_COOKIE}=1; Path=/; HttpOnly; SameSite=Lax${new URL(request.url).protocol === "https:" ? "; Secure" : ""}`;
+        `${VIEW_COOKIE}=1; Path=/; HttpOnly; SameSite=Lax${new URL(origin ?? request.url).protocol === "https:" ? "; Secure" : ""}`;
     }
     return json({ count }, 200, headers);
   } catch {
