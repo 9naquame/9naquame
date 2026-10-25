@@ -1,3 +1,4 @@
+import { ViewCounter } from "@/components/portfolio/ViewCounter";
 import { ContactTrigger } from "@/components/portfolio/Contact";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -228,7 +229,10 @@ export default async function ProjectPage({ params }: Props) {
         </div>
       </main>
       <footer className="site-footer">
-        <span>© {new Date().getFullYear()} Kwame Owusu-Boakye</span>
+        <div className="footer-identity">
+          <span>© {new Date().getFullYear()} Kwame Owusu-Boakye</span>
+          <ViewCounter />
+        </div>
         <Link href="/#work">
           Back to selected work <ArrowUpRight size={13} />
         </Link>

@@ -1,3 +1,4 @@
+import { ViewCounter } from "@/components/portfolio/ViewCounter";
 import { ContactTrigger } from "@/components/portfolio/Contact";
 import Image from "next/image";
 import Link from "next/link";
@@ -630,7 +631,10 @@ export default function Portfolio() {
         </div>
       </main>
       <footer className="site-footer">
-        <span>© {new Date().getFullYear()} Kwame Owusu-Boakye</span>
+        <div className="footer-identity">
+          <span>© {new Date().getFullYear()} Kwame Owusu-Boakye</span>
+          <ViewCounter />
+        </div>
         <span>Thoughtfully built. Always evolving.</span>
         <a href="#">
           Back to top <ArrowDown size={13} className="back-top-arrow" />

@@ -1,3 +1,4 @@
+import { ViewCounterProvider } from "@/components/portfolio/ViewCounter";
 import { ContactProvider } from "@/components/portfolio/Contact";
 import type { Metadata } from "next";
 import { Outfit, JetBrains_Mono } from "next/font/google";
@@ -28,7 +29,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.variable} ${jetbrainsMono.variable}`}>
-        <ContactProvider>{children}</ContactProvider>
+        <ViewCounterProvider>
+          <ContactProvider>{children}</ContactProvider>
+        </ViewCounterProvider>
       </body>
     </html>
   );

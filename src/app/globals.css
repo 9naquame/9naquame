@@ -2698,3 +2698,22 @@ button.fact-contact:hover {
     font-size: 10px;
   }
 }
+
+/* The count shares the copyright line, including on small screens. */
+.footer-identity {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+.site-views {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.site-views svg {
+  color: var(--muted);
+  flex-shrink: 0;
+}
