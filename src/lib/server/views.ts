@@ -1,7 +1,6 @@
 import { createHash } from "node:crypto";
 import type { Client } from "@libsql/client";
 
-export const VIEW_COOKIE = "portfolio_visit";
 export const PUBLIC_SITE_ORIGIN = "https://9naqua.me";
 
 export function createViewStore(client: Pick<Client, "execute">) {
@@ -15,7 +14,7 @@ export function createViewStore(client: Pick<Client, "execute">) {
       );
       const count = Number(result.rows[0]?.count ?? 0);
       if (!Number.isSafeInteger(count) || count < 0)
-        throw new Error("Invalid visit count");
+        throw new Error("Invalid view count");
       return count;
     },
   };
@@ -34,12 +33,12 @@ export function createViewRateLimiter(now = Date.now) {
       "unknown";
     const key = createHash("sha256").update(ip).digest("hex");
     const entry = requests.get(key);
-    if (entry && entry.count >= 10)
+    if (entry && entry.count >= 60)
       return Math.ceil((entry.until - time) / 1000);
     if (!entry && requests.size >= 5000) return 60;
     requests.set(key, {
       count: (entry?.count ?? 0) + 1,
-      until: entry?.until ?? time + 600_000,
+      until: entry?.until ?? time + 60_000,
     });
     return 0;
   };
@@ -99,22 +98,13 @@ export async function handleViews(
   const retry = rateLimit(request);
   if (retry)
     return json({ available: false }, 429, { "Retry-After": String(retry) });
-  const alreadyCounted = request.headers
-    .get("cookie")
-    ?.split(";")
-    .some((value) => value.trim() === `${VIEW_COOKIE}=1`);
   const bot = /bot|crawler|spider|headless|preview/i.test(
     request.headers.get("user-agent") || "",
   );
-  const increment = request.method === "POST" && !alreadyCounted && !bot;
+  const increment = request.method === "POST" && !bot;
   try {
     const count = await store.count(increment);
-    const headers: Record<string, string> = {};
-    if (request.method === "POST" && !bot) {
-      headers["Set-Cookie"] =
-        `${VIEW_COOKIE}=1; Path=/; HttpOnly; SameSite=Lax${new URL(origin ?? request.url).protocol === "https:" ? "; Secure" : ""}`;
-    }
-    return json({ count }, 200, headers);
+    return json({ count }, 200);
   } catch {
     return json({ available: false }, 503);
   }

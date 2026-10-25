@@ -27,7 +27,7 @@ const request = (method = "POST", headers = {}, body) =>
     body,
   });
 
-test("atomic increments survive concurrent visits in one table and row", async (t) => {
+test("atomic increments survive concurrent page views in one table and row", async (t) => {
   const { client, store } = await database(t);
   assert.equal(await store.count(false), 0);
   await Promise.all(Array.from({ length: 30 }, () => store.count(true)));
@@ -37,7 +37,7 @@ test("atomic increments survive concurrent visits in one table and row", async (
   assert.equal(result.rows[0].key, "portfolio");
 });
 
-test("GET reads; POST increments; a session cookie prevents repeat increments", async (t) => {
+test("GET reads; every POST increments even with an old visit cookie", async (t) => {
   const { store } = await database(t);
   const deps = { store, rateLimit: createViewRateLimiter() };
   assert.deepEqual(await (await handleViews(request("GET"), deps)).json(), {
@@ -45,15 +45,13 @@ test("GET reads; POST increments; a session cookie prevents repeat increments", 
   });
   const first = await handleViews(request(), deps);
   assert.deepEqual(await first.json(), { count: 1 });
-  const cookie = first.headers.get("set-cookie");
-  assert.match(cookie, /HttpOnly; SameSite=Lax; Secure/);
-  assert.ok(!cookie.includes("Max-Age"));
+  assert.equal(first.headers.get("set-cookie"), null);
   const repeat = await handleViews(
     request("POST", { cookie: "other=1; portfolio_visit=1" }),
     deps,
   );
-  assert.deepEqual(await repeat.json(), { count: 1 });
-  assert.equal(await store.count(false), 1);
+  assert.deepEqual(await repeat.json(), { count: 2 });
+  assert.equal(await store.count(false), 2);
 });
 
 test("empty request streams are accepted as Next.js wraps empty POST bodies", async (t) => {
@@ -94,15 +92,15 @@ test("cross-origin calls, bodies, and obvious bots cannot increment", async (t) 
   assert.equal(await store.count(false), 0);
 });
 
-test("rate limits are IP-scoped and expire after ten minutes", async (t) => {
+test("rate limits are IP-scoped and expire after one minute", async (t) => {
   const { store } = await database(t);
   let time = 1000;
   const deps = { store, rateLimit: createViewRateLimiter(() => time) };
-  for (let i = 0; i < 10; i++)
+  for (let i = 0; i < 60; i++)
     assert.equal((await handleViews(request(), deps)).status, 200);
   const limited = await handleViews(request(), deps);
   assert.equal(limited.status, 429);
-  assert.equal(limited.headers.get("retry-after"), "600");
+  assert.equal(limited.headers.get("retry-after"), "60");
   assert.equal(
     (
       await handleViews(
@@ -112,7 +110,7 @@ test("rate limits are IP-scoped and expire after ten minutes", async (t) => {
     ).status,
     200,
   );
-  time += 600000;
+  time += 60000;
   assert.equal((await handleViews(request(), deps)).status, 200);
 });
 
@@ -148,7 +146,7 @@ test("trusted public origin works behind Netlify while other origins remain bloc
   const response = await handleViews(proxied("https://9naqua.me"), deps);
   assert.equal(response.status, 200);
   assert.deepEqual(await response.json(), { count: 1 });
-  assert.match(response.headers.get("set-cookie"), /; Secure/);
+  assert.equal(response.headers.get("set-cookie"), null);
   assert.equal(
     (await handleViews(proxied("https://evil.example"), deps)).status,
     403,
