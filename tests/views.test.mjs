@@ -76,6 +76,24 @@ test("empty request streams are accepted as Next.js wraps empty POST bodies", as
   assert.deepEqual(await response.json(), { count: 1, visits: 1 });
 });
 
+test("only successful GET totals are cacheable; writes and errors stay private", async (t) => {
+  const { store } = await database(t);
+  const deps = { store, rateLimit: createViewRateLimiter() };
+  const read = await handleViews(request("GET"), deps);
+  assert.equal(read.headers.get("set-cookie"), null);
+  assert.equal(read.headers.get("Cache-Control"), "public, max-age=0, must-revalidate");
+  assert.equal(read.headers.get("Netlify-CDN-Cache-Control"), "public, s-maxage=30, stale-while-revalidate=300");
+  for (const response of [
+    await handleViews(request(), deps),
+    await handleViews(request("POST", { "user-agent": "Googlebot" }), deps),
+    await handleViews(request("GET"), { ...deps, store: null }),
+  ]) {
+    assert.equal(response.headers.get("Cache-Control"), "no-store");
+    assert.equal(response.headers.get("Netlify-CDN-Cache-Control"), null);
+    assert.equal(response.headers.get("CDN-Cache-Control"), null);
+  }
+});
+
 test("cross-origin calls, bodies, and obvious bots cannot increment", async (t) => {
   const { store } = await database(t);
   const deps = { store, rateLimit: createViewRateLimiter() };

@@ -121,6 +121,14 @@ export async function handleViews(
   try {
     const counts = await store.count(increment, increment && !visited);
     const headers: Record<string, string> = {};
+    if (request.method === "GET") {
+      // Only successful, cookie-free reads may be shared by the CDN.
+      headers["Cache-Control"] = "public, max-age=0, must-revalidate";
+      headers["CDN-Cache-Control"] =
+        "public, s-maxage=30, stale-while-revalidate=300";
+      headers["Netlify-CDN-Cache-Control"] =
+        "public, s-maxage=30, stale-while-revalidate=300";
+    }
     if (increment)
       headers["Set-Cookie"] =
         `${VISIT_COOKIE}=1; Path=/; HttpOnly; SameSite=Lax${new URL(origin ?? request.url).protocol === "https:" ? "; Secure" : ""}`;
