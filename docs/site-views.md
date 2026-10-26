@@ -16,9 +16,13 @@ pages. No analytics dashboard or separate backend service is required.
 4. Redeploy production so the running function receives the variables.
 
 Do not use `NEXT_PUBLIC_` for these values. The database connector imports
-`server-only`; browsers only receive the total. The counter is hidden if disabled,
-misconfigured, timed out, rate-limited, or unavailable. There is no invented initial
-number. It starts at zero and counts from activation onward.
+`server-only`; browsers only receive the total. The counter initially shows recent
+confirmed totals from session storage (up to five minutes old), or a CDN-cacheable
+GET, while the POST updates both totals in the background. Successful GETs are
+cached at the CDN for 30 seconds with up to five minutes of stale-while-revalidate;
+POSTs and errors are never cached. A failed update leaves the last displayed total
+visible. With no saved or successful response, the counter stays hidden. There is
+no invented initial number. It starts at zero and counts from activation onward.
 
 ## Upgrade an existing counter
 
@@ -33,8 +37,9 @@ The old deployed code continues working while the new column is added.
   navigation) increments the total. Same-page anchor and query-string changes do
   not count as separate views. Next.js link prefetching does not count a view.
 - A session cookie (`portfolio_session_v2`) adds one visit per browsing session.
-  Refreshes and page navigation add views without another visit. No session storage
-  is needed. GET never creates a cookie or increments either total.
+  Refreshes and page navigation add views without another visit. Session storage
+  only caches displayed totals; it does not decide whether a visit is new.
+  GET never creates a cookie or increments either total.
 - Visits start at zero when dual counting is enabled. Existing view totals are
   preserved; past visits cannot be reconstructed. The obsolete `portfolio_visit`
   cookie is ignored so existing visitors are counted on their next page load.
@@ -59,13 +64,15 @@ The old deployed code continues working while the new column is added.
 
 ## Verify without touching production data
 
-`node --experimental-strip-types --test tests/views.test.mjs` uses an isolated
-in-memory SQLite database to check real SQL, concurrent and repeated increments, origin and payload rejection, rate limiting, and failures.
+`node --experimental-strip-types --test tests/views*.test.mjs` uses an isolated
+in-memory SQLite database to check real SQL, concurrent and repeated increments,
+origin and payload rejection, rate limiting, cache headers, and failures. Client
+tests hold the write pending to verify that cached/read totals appear first.
 
 For local UI testing, run the schema against a disposable local database and start
 Next.js with `SITE_VIEWS_ENABLED=true TURSO_DATABASE_URL=file:/private/tmp/views-test.db`.
 Local file URLs are accepted only outside production. Never enable tests against
 the live database. Load the homepage, refresh, visit a project, and go back: each
 should add one view while visits stay unchanged. A request without the session
-cookie starts another visit. Disabling the flag should hide the counter without affecting
-the footer.
+cookie starts another visit. With no saved totals, disabling the flag should hide
+the counter without affecting the footer.

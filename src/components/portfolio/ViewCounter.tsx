@@ -9,46 +9,39 @@ import {
 } from "react";
 import { Eye } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { createViewRequest } from "@/lib/views-client";
 
 type SiteCounts = { count: number; visits: number };
 const CountContext = createContext<SiteCounts | null>(null);
 let latestView:
-  | { path: string; request: Promise<SiteCounts | null> }
+  | ({ path: string } & ReturnType<typeof createViewRequest>)
   | undefined;
-
-async function loadCount() {
-  try {
-    const response = await fetch("/api/views", {
-      method: "POST",
-      credentials: "same-origin",
-      cache: "no-store",
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!response.ok) return null;
-    const { count, visits } = await response.json();
-    if (
-      ![count, visits].every(
-        (value) => Number.isSafeInteger(value) && value >= 0,
-      )
-    )
-      return null;
-    return { count, visits } as SiteCounts;
-  } catch {
-    return null;
-  }
-}
 
 export function ViewCounterProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [count, setCount] = useState<SiteCounts | null>(null);
   useEffect(() => {
     let active = true;
+    let updated = false;
     // Avoid duplicate Strict Mode effects, while counting every route transition.
     // A document refresh resets this module, so it counts as another view.
-    if (latestView?.path !== pathname)
-      latestView = { path: pathname, request: loadCount() };
+    if (latestView?.path !== pathname) {
+      let storage: Storage | undefined;
+      try {
+        storage = window.sessionStorage;
+      } catch {
+        // Private browsing may block storage access.
+      }
+      latestView = { path: pathname, ...createViewRequest(storage) };
+    }
+    void latestView.preview.then((value) => {
+      if (active && !updated && value) setCount(value);
+    });
     void latestView.request.then((value) => {
-      if (active) setCount(value);
+      if (active && value) {
+        updated = true;
+        setCount(value);
+      }
     });
     return () => {
       active = false;
