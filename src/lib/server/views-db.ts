@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "@libsql/client";
-import { createViewStore } from "./views";
+import { createViewStore, readViewSnapshot } from "./views";
 
 let cached:
   | { key: string; store: ReturnType<typeof createViewStore> }
@@ -28,4 +28,9 @@ export function getViewStore() {
   } catch {
     return null;
   }
+}
+
+// Read-only: rendering, prefetching, and page regeneration never add views.
+export function getInitialViewCounts() {
+  return readViewSnapshot(getViewStore());
 }

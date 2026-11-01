@@ -7,6 +7,7 @@ import {
   createViewStore,
   createViewRateLimiter,
   handleViews,
+  readViewSnapshot,
 } from "../src/lib/server/views.ts";
 
 async function database(t) {
@@ -263,4 +264,40 @@ test("migration preserves the existing view total and initializes visits at zero
   assert.deepEqual(await store.count(false), { count: 123, visits: 0 });
   assert.deepEqual(await store.count(true, true), { count: 124, visits: 1 });
   assert.deepEqual(await store.count(true, false), { count: 125, visits: 1 });
+});
+
+test("HTML snapshots read totals without incrementing and tolerate unavailable storage", async (t) => {
+  const { store } = await database(t);
+  await store.count(true, true);
+  assert.deepEqual(await readViewSnapshot(store), { count: 1, visits: 1 });
+  assert.deepEqual(await store.count(false), { count: 1, visits: 1 });
+  assert.equal(await readViewSnapshot(null), null);
+  assert.equal(
+    await readViewSnapshot({
+      count: async () => {
+        throw new Error("private database details");
+      },
+    }),
+    null,
+  );
+});
+
+test("a stalled HTML snapshot falls back without waiting indefinitely", async () => {
+  let rejectRead;
+  const stalled = new Promise((_resolve, reject) => {
+    rejectRead = reject;
+  });
+  const counts = await readViewSnapshot(
+    {
+      count: (increment) => {
+        assert.equal(increment, false);
+        return stalled;
+      },
+    },
+    10,
+  );
+  assert.equal(counts, null);
+  // A database failure after the deadline must remain handled.
+  rejectRead(new Error("late database failure"));
+  await new Promise((resolve) => setImmediate(resolve));
 });

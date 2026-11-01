@@ -8,7 +8,7 @@ pages. No analytics dashboard or separate backend service is required.
 1. Create or use a Turso **libSQL** database, supported by `@libsql/client`.
 2. Run `docs/site-views.sql` in that database. The first counted view creates the
    single `portfolio` row; there is no per-person or per-page records.
-3. Set these Netlify **production Functions** environment variables:
+3. Set these Netlify **production Build and Functions** environment variables:
    - `SITE_VIEWS_ENABLED=true`
    - `TURSO_DATABASE_URL=libsql://your-database-host`
    - `TURSO_AUTH_TOKEN`: a database-scoped token with write access. Prefer a
@@ -16,12 +16,23 @@ pages. No analytics dashboard or separate backend service is required.
 4. Redeploy production so the running function receives the variables.
 
 Do not use `NEXT_PUBLIC_` for these values. The database connector imports
-`server-only`; browsers only receive the total. The counter initially shows recent
-confirmed totals from session storage (up to five minutes old), or a CDN-cacheable
-GET, while the POST updates both totals in the background. Successful GETs are
+`server-only`; browsers only receive the total. Pages include a confirmed read-only counter
+snapshot in their cached HTML, so a first-time visitor can see totals without
+waiting for hydration or a separate counter request. Pages regenerate in the
+background after 60 seconds using Next.js ISR. Build scope seeds new deployment
+pages; Functions scope lets regenerated pages and API calls read the database.
+Snapshot reads never increment views or visits. If the database fails or a
+snapshot read takes more than eight seconds, rendering proceeds without a
+snapshot and the client falls back to the counter API.
+
+After hydration, the POST updates both totals in the background. A newer confirmed
+session-storage total (up to five minutes old) can replace the HTML snapshot. When
+neither snapshot nor saved totals are available, the client uses a CDN-cacheable
+GET while recording the POST. Successful GETs are
 cached at the CDN for 30 seconds with up to five minutes of stale-while-revalidate;
 POSTs and errors are never cached. A failed update leaves the last displayed total
-visible. With no saved or successful response, the counter stays hidden. There is
+visible. Older responses that finish late cannot overwrite newer displayed or
+session-stored totals. With no saved or successful response, the counter stays hidden. There is
 no invented initial number. It starts at zero and counts from activation onward.
 
 ## Upgrade an existing counter
@@ -49,7 +60,9 @@ The old deployed code continues working while the new column is added.
 - The increment is an atomic SQL upsert, updating views and visits together without losing concurrent increments. GET only reads. POST accepts no body or user-selected keys/counts, and
   checks the Origin header against the canonical public origin (`https://9naqua.me`)
   in production. This avoids relying on Netlify’s internal request URL. Development
-  checks against the request origin.
+  checks against the browser-facing Host and request protocol, since Next.js can
+  internally normalize a `127.0.0.1` request URL to `localhost`. Forwarded-host
+  headers do not override this check; production always uses the canonical origin.
 - Obvious bot user agents are not counted. Each apparent IP is limited to 60
   requests per minute per running function instance. Bounded process memory
   stores only hashed IP keys and counters; no IPs are stored in Turso.

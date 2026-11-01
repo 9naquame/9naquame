@@ -30,6 +30,25 @@ export function createViewStore(client: Pick<Client, "execute">) {
   };
 }
 
+// Bound the optional HTML snapshot so an unavailable database cannot hang rendering.
+export async function readViewSnapshot(
+  store: ReturnType<typeof createViewStore> | null,
+  timeoutMs = 8000,
+): Promise<SiteCounts | null> {
+  if (!store) return null;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const unavailable = new Promise<null>((resolve) => {
+      timer = setTimeout(() => resolve(null), timeoutMs);
+    });
+    return await Promise.race([store.count(false), unavailable]);
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 // Basic per-instance protection, not a distributed bot-prevention system.
 export function createViewRateLimiter(now = Date.now) {
   const requests = new Map<string, { count: number; until: number }>();
