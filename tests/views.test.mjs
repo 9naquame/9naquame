@@ -1,3 +1,4 @@
+import { resolveRequestOrigin } from "../src/lib/server/request-origin.ts";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -26,6 +27,56 @@ const request = (method = "POST", headers = {}, body) =>
     },
     body,
   });
+
+test("development accepts the browser Host origin despite Next's internal URL", async (t) => {
+  const { store } = await database(t);
+  const rateLimit = createViewRateLimiter();
+  for (const host of ["127.0.0.1:3000", "localhost:3000", "[::1]:3000"]) {
+    const localRequest = (origin) =>
+      new Request("http://localhost:3000/api/views", {
+        method: "POST",
+        headers: { host, origin, "user-agent": "Mozilla/5.0" },
+      });
+    const valid = localRequest(`http://${host}`);
+    const deps = {
+      store,
+      rateLimit,
+      origin: resolveRequestOrigin(valid, false),
+    };
+    assert.equal((await handleViews(valid, deps)).status, 200);
+    assert.equal(
+      (await handleViews(localRequest("https://evil.example"), deps)).status,
+      403,
+    );
+  }
+  assert.deepEqual(await store.count(false), { count: 3, visits: 3 });
+});
+
+test("production origin stays canonical regardless of Host or forwarded headers", async (t) => {
+  const { store } = await database(t);
+  const proxied = (origin) =>
+    new Request("http://internal-handler/api/views", {
+      method: "POST",
+      headers: {
+        host: "evil.example",
+        "x-forwarded-host": "evil.example",
+        origin,
+        "user-agent": "Mozilla/5.0",
+      },
+    });
+  const valid = proxied("https://9naqua.me");
+  const deps = {
+    store,
+    rateLimit: createViewRateLimiter(),
+    origin: resolveRequestOrigin(valid, true),
+  };
+  assert.equal((await handleViews(valid, deps)).status, 200);
+  assert.equal(
+    (await handleViews(proxied("https://evil.example"), deps)).status,
+    403,
+  );
+  assert.deepEqual(await store.count(false), { count: 1, visits: 1 });
+});
 
 test("atomic increments survive concurrent page views in one table and row", async (t) => {
   const { client, store } = await database(t);
@@ -81,8 +132,14 @@ test("only successful GET totals are cacheable; writes and errors stay private",
   const deps = { store, rateLimit: createViewRateLimiter() };
   const read = await handleViews(request("GET"), deps);
   assert.equal(read.headers.get("set-cookie"), null);
-  assert.equal(read.headers.get("Cache-Control"), "public, max-age=0, must-revalidate");
-  assert.equal(read.headers.get("Netlify-CDN-Cache-Control"), "public, s-maxage=30, stale-while-revalidate=300");
+  assert.equal(
+    read.headers.get("Cache-Control"),
+    "public, max-age=0, must-revalidate",
+  );
+  assert.equal(
+    read.headers.get("Netlify-CDN-Cache-Control"),
+    "public, s-maxage=30, stale-while-revalidate=300",
+  );
   for (const response of [
     await handleViews(request(), deps),
     await handleViews(request("POST", { "user-agent": "Googlebot" }), deps),

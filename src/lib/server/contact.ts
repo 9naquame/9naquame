@@ -44,6 +44,7 @@ export function createContactRateLimiter(now = Date.now) {
     for (const [key, value] of attempts)
       if (value.expires <= time) attempts.delete(key);
     const ip =
+      request.headers.get("x-nf-client-connection-ip")?.trim() ||
       request.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
       request.headers.get("x-real-ip") ||
       "unknown";
@@ -102,6 +103,7 @@ export async function sendContactEmail(
 }
 
 type Dependencies = {
+  origin?: string;
   configured: boolean;
   deliver: (message: ContactMessage) => Promise<void>;
   rateLimit: ReturnType<typeof createContactRateLimiter>;
@@ -122,7 +124,11 @@ export async function handleContact(
 ) {
   const origin = request.headers.get("origin");
   try {
-    if (!origin || new URL(origin).origin !== new URL(request.url).origin)
+    if (
+      !origin ||
+      new URL(origin).origin !==
+        new URL(dependencies.origin ?? request.url).origin
+    )
       return json(
         { error: "Please send your message from this website." },
         403,

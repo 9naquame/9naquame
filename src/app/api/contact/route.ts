@@ -1,3 +1,4 @@
+import { resolveRequestOrigin } from "@/lib/server/request-origin";
 import {
   createContactRateLimiter,
   getDeliveryConfig,
@@ -18,6 +19,10 @@ export function GET() {
 export async function POST(request: Request) {
   const config = getDeliveryConfig();
   return handleContact(request, {
+    origin: resolveRequestOrigin(
+      request,
+      process.env.NODE_ENV === "production",
+    ),
     configured: Boolean(config),
     rateLimit,
     deliver: async (message) => {

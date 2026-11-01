@@ -12,6 +12,8 @@ import {
 import * as Dialog from "@radix-ui/react-dialog";
 import { ArrowUpRight, Check, LoaderCircle, Mail, Send, X } from "lucide-react";
 
+import { checkContactAvailability } from "@/lib/contact-client";
+
 const INBOX = "kwame@owusuboakye.com";
 type ContactContextValue = {
   showContact: (topic: string, trigger: HTMLButtonElement) => void;
@@ -63,17 +65,15 @@ export function ContactProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!open) return;
     const controller = new AbortController();
+    let active = true;
     setAvailable(null);
-    fetch("/api/contact", { signal: controller.signal, cache: "no-store" })
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Status unavailable");
-        const result = await response.json();
-        if (!controller.signal.aborted) setAvailable(result.available === true);
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) setAvailable(false);
-      });
-    return () => controller.abort();
+    void checkContactAvailability(controller.signal).then((result) => {
+      if (active) setAvailable(result);
+    });
+    return () => {
+      active = false;
+      controller.abort();
+    };
   }, [open]);
 
   function showContact(nextTopic: string, nextTrigger: HTMLButtonElement) {
@@ -117,17 +117,17 @@ export function ContactProvider({ children }: { children: ReactNode }) {
     pending.current = true;
     setStatus("sending");
     setError("");
-    const fields = {
-      name: name.trim(),
-      email: email.trim(),
-      message: message.trim(),
-      topic,
-      website,
-    };
-    const body = JSON.stringify(fields);
-    if (submission.current?.body !== body)
-      submission.current = { body, id: crypto.randomUUID() };
     try {
+      const fields = {
+        name: name.trim(),
+        email: email.trim(),
+        message: message.trim(),
+        topic,
+        website,
+      };
+      const body = JSON.stringify(fields);
+      if (submission.current?.body !== body)
+        submission.current = { body, id: crypto.randomUUID() };
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

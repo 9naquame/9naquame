@@ -4,8 +4,6 @@ import type { Client } from "@libsql/client";
 export const VISIT_COOKIE = "portfolio_session_v2";
 export type SiteCounts = { count: number; visits: number };
 
-export const PUBLIC_SITE_ORIGIN = "https://9naqua.me";
-
 export function createViewStore(client: Pick<Client, "execute">) {
   return {
     async count(increment: boolean, newVisit = false): Promise<SiteCounts> {

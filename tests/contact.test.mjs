@@ -1,3 +1,4 @@
+import { resolveRequestOrigin } from "../src/lib/server/request-origin.ts";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
@@ -186,4 +187,104 @@ test("provider adapter uses fixed addresses, reply-to, and stable retry keys", a
   await assert.rejects(
     sendContactEmail(message, config, async () => Response.json({})),
   );
+});
+
+test("contact accepts a loopback Host despite Next's internal localhost URL", async () => {
+  let delivered = 0;
+  const localRequest = (origin) =>
+    new Request("http://localhost:3000/api/contact", {
+      method: "POST",
+      headers: {
+        host: "127.0.0.1:3000",
+        origin,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(fields()),
+    });
+  const valid = localRequest("http://127.0.0.1:3000");
+  const deps = dependencies({
+    origin: resolveRequestOrigin(valid, false),
+    deliver: async () => {
+      delivered++;
+    },
+  });
+  assert.equal((await handleContact(valid, deps)).status, 200);
+  assert.equal(
+    (await handleContact(localRequest("https://evil.example"), deps)).status,
+    403,
+  );
+  assert.equal(delivered, 1);
+});
+
+test("contact accepts the public production origin behind an internal hosting URL", async () => {
+  let delivered = 0;
+  const proxiedRequest = (origin) =>
+    new Request("http://internal-netlify-handler/api/contact", {
+      method: "POST",
+      headers: {
+        host: "internal-netlify-handler",
+        "x-forwarded-host": "evil.example",
+        origin,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(fields()),
+    });
+  const valid = proxiedRequest("https://9naqua.me");
+  const deps = dependencies({
+    origin: resolveRequestOrigin(valid, true),
+    deliver: async () => {
+      delivered++;
+    },
+  });
+  assert.equal((await handleContact(valid, deps)).status, 200);
+  for (const origin of [
+    "https://evil.example",
+    "http://internal-netlify-handler",
+  ]) {
+    assert.equal(
+      (await handleContact(proxiedRequest(origin), deps)).status,
+      403,
+    );
+  }
+  assert.equal(delivered, 1);
+});
+
+test("contact rate limiting uses Netlify's connection IP ahead of changing forwarded headers", async () => {
+  let sent = 0;
+  const deps = dependencies({
+    rateLimit: createContactRateLimiter(() => 1000),
+    deliver: async () => {
+      sent++;
+    },
+  });
+  const fromConnection = (connectionIp, forwardedIp) =>
+    request(fields(), {
+      "x-nf-client-connection-ip": connectionIp,
+      "x-forwarded-for": forwardedIp,
+      "x-real-ip": forwardedIp,
+    });
+  for (let index = 0; index < 5; index++) {
+    assert.equal(
+      (
+        await handleContact(
+          fromConnection("192.0.2.1", `198.51.100.${index}`),
+          deps,
+        )
+      ).status,
+      200,
+    );
+  }
+  const blocked = await handleContact(
+    fromConnection("192.0.2.1", "198.51.100.99"),
+    deps,
+  );
+  assert.equal(blocked.status, 429);
+  assert.equal(blocked.headers.get("retry-after"), "600");
+  assert.equal(sent, 5);
+  assert.equal(
+    (await handleContact(fromConnection("192.0.2.2", "198.51.100.99"), deps))
+      .status,
+    200,
+  );
+  assert.equal(sent, 6);
 });
