@@ -159,7 +159,7 @@ export default async function ProjectPage({ params }: Props) {
               ))}
             </div>
           </section>
-          {!project.laterRedesign && (
+          {!project.laterRedesign && "architecture" in story && (
             <>
               <section className="case-section">
                 <div className="section-heading">
@@ -171,11 +171,12 @@ export default async function ProjectPage({ params }: Props) {
                   </div>
                 </div>
                 <p className="case-map-caption">
-                  A high-level map of the published technology stack. Select a
-                  layer to explore it.
+                  Explore the components behind the product. Select a card to
+                  see its role and connections.
                 </p>
                 <StackMap
-                  layers={story.stack}
+                  key={project.slug}
+                  architecture={story.architecture}
                   infrastructure={story.infrastructure}
                 />
               </section>

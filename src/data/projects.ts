@@ -1,3 +1,5 @@
+import { rideonArchitecture, transactiqArchitecture } from "./architecture";
+
 export type Project = {
   slug: string;
   number: string;
@@ -126,27 +128,8 @@ export const projectStories = {
         text: "Scheduling, routing, and background processing extend the system beyond its screens. Separately deployable applications keep client and service responsibilities distinct.",
       },
     ],
-    stack: [
-      {
-        label: "EXPERIENCES",
-        technology: "Flutter + Next.js",
-        text: "Separate Flutter applications serve riders and drivers. Next.js supports organization administration, while Astro provides the public website and guest ride request experience.",
-        icon: "interface",
-      },
-      {
-        label: "PLATFORM",
-        technology: "FastAPI",
-        text: "The API owns the domain rules behind scheduling, routing, and transportation workflows. Generated Dart and TypeScript clients connect the applications through shared contracts.",
-        icon: "application",
-      },
-      {
-        label: "DATA",
-        technology: "PostgreSQL",
-        text: "PostgreSQL is the platform's database, with organization boundaries and authorization governing access to transportation data.",
-        icon: "data",
-      },
-    ],
-    infrastructure: ["Astro", "Docker", "Background workers"],
+    architecture: rideonArchitecture,
+    infrastructure: ["Docker", "Railway"],
     accent: "cyan",
   },
   transactiq: {
@@ -181,26 +164,7 @@ export const projectStories = {
         text: "The engineering challenge extends beyond capturing a donation: the information also has to support ongoing tracking and receipt generation.",
       },
     ],
-    stack: [
-      {
-        label: "INTERFACE",
-        technology: "React",
-        text: "The user-facing application for contribution management and financial workflows.",
-        icon: "interface",
-      },
-      {
-        label: "APPLICATION",
-        technology: "FastAPI",
-        text: "The Python application layer behind the platform's financial workflows.",
-        icon: "application",
-      },
-      {
-        label: "DATA",
-        technology: "PostgreSQL",
-        text: "The relational database in the platform's published technology stack.",
-        icon: "data",
-      },
-    ],
+    architecture: transactiqArchitecture,
     infrastructure: ["Docker", "Kubernetes", "Terraform"],
     accent: "emerald",
   },
